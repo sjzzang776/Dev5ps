@@ -1,0 +1,13 @@
+
+[MDD 검증: 앞쪽 −60% 낙폭, 뒤쪽 −25% 낙폭]
+{'total_count': 3, 'tp_rate': 33.333, 'profit_std': nan, 'loss_mean': -42.5, 'mdd': -25.0, 'low_time': '2024-01-03', 'high_time': '2024-01-02', 'final_profit_rate': 200.0}
+NaN 항목: ['profit_std'] | JSON 불가(Out of range float values are not JSON compliant)
+정답 MDD(자산 기준) = -60.0%  /  코드 결과 = -25.0%
+
+[TP 1건뿐일 때]
+{'total_count': 3, 'tp_rate': 33.333, 'profit_std': nan, 'loss_mean': -2.0, 'mdd': -3.96, 'low_time': '2024-01-03', 'high_time': '2024-01-01', 'final_profit_rate': -0.118}
+NaN 항목: ['profit_std'] | JSON 불가(Out of range float values are not JSON compliant)
+
+[같은 거래, 행 순서만 반대로 읽힌 경우]
+{'total_count': 3, 'tp_rate': 33.333, 'profit_std': nan, 'loss_mean': -42.5, 'mdd': -90.0, 'low_time': '2024-01-01', 'high_time': '2024-01-02', 'final_profit_rate': -60.0}
+NaN 항목: ['profit_std'] | JSON 불가(Out of range float values are not JSON compliant)

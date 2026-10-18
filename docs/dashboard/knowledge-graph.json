@@ -1,0 +1,3119 @@
+{
+ "version": "1.0.0",
+ "project": {
+  "name": "Dev5ps",
+  "languages": [
+   "dockerfile",
+   "json",
+   "markdown",
+   "python",
+   "toml",
+   "yaml"
+  ],
+  "frameworks": [
+   "FastAPI",
+   "Streamlit",
+   "SQLAlchemy",
+   "Uvicorn",
+   "pytest",
+   "pandas",
+   "Plotly",
+   "Docker",
+   "Docker Compose",
+   "GitHub Actions"
+  ],
+  "description": "오픈소스를 이용한 SW 개발 실습 프로젝트로, Binance OHLCV 데이터를 수집해 기술 지표(RSI, MACD, Bollinger 등)를 계산하고 PostgreSQL에 저장한 뒤 FastAPI 조회 서버와 Streamlit 대시보드(차트·백테스트)로 제공합니다. Docker Compose로 서비스를 구성하고 GitHub Actions로 테스트·이미지 빌드·SSH 배포를 자동화합니다.",
+  "analyzedAt": "2026-10-18T16:22:11",
+  "gitCommitHash": "028e0878ea90330caa39901ff3624f1d38c494f9"
+ },
+ "nodes": [
+  {
+   "id": "file:server-collect_data/indicators/boll.py",
+   "type": "file",
+   "name": "boll.py",
+   "filePath": "server-collect_data/indicators/boll.py",
+   "summary": "볼린저 밴드(이동평균 ± k·표준편차)의 중심선·상단·하단을 계산하는 보조지표 모듈.",
+   "tags": [
+    "utility",
+    "indicator",
+    "bollinger-bands",
+    "pandas"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-collect_data/indicators/calculate.py",
+   "type": "file",
+   "name": "calculate.py",
+   "filePath": "server-collect_data/indicators/calculate.py",
+   "summary": "EMA(7/25/99)·RSI·MACD·볼린저 밴드·거래량 이동평균을 한 번에 계산해 OHLCV DataFrame에 컬럼으로 추가하는 지표 계산 진입 모듈.",
+   "tags": [
+    "entry-point",
+    "indicator",
+    "orchestration",
+    "pandas",
+    "data-pipeline"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-collect_data/indicators/ema.py",
+   "type": "file",
+   "name": "ema.py",
+   "filePath": "server-collect_data/indicators/ema.py",
+   "summary": "pandas ewm으로 지수이동평균(EMA)을 계산하는 한 줄짜리 헬퍼.",
+   "tags": [
+    "utility",
+    "indicator",
+    "ema",
+    "pandas"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-collect_data/indicators/macd.py",
+   "type": "file",
+   "name": "macd.py",
+   "filePath": "server-collect_data/indicators/macd.py",
+   "summary": "EMA12−EMA26으로 MACD 선을, 그 9기간 EMA로 시그널 선을 계산하는 모듈.",
+   "tags": [
+    "utility",
+    "indicator",
+    "macd",
+    "pandas"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-collect_data/indicators/rsi.py",
+   "type": "file",
+   "name": "rsi.py",
+   "filePath": "server-collect_data/indicators/rsi.py",
+   "summary": "Wilder 방식 RMA 평활로 RSI를 계산하고, RSI의 단순이동평균(시그널)을 함께 반환하는 모듈.",
+   "tags": [
+    "utility",
+    "indicator",
+    "rsi",
+    "pandas"
+   ],
+   "complexity": "simple",
+   "languageNotes": "TradingView 등과 값을 맞추기 위해 ewm 대신 첫 값을 SMA로 시드한 뒤 재귀식으로 RMA를 직접 구현했다."
+  },
+  {
+   "id": "file:server-collect_data/indicators/volume_ma.py",
+   "type": "file",
+   "name": "volume_ma.py",
+   "filePath": "server-collect_data/indicators/volume_ma.py",
+   "summary": "거래량 시리즈의 단순 이동평균(rolling mean)을 계산하는 헬퍼.",
+   "tags": [
+    "utility",
+    "indicator",
+    "volume",
+    "pandas"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/boll.py:calculate_bollinger",
+   "type": "function",
+   "name": "calculate_bollinger",
+   "filePath": "server-collect_data/indicators/boll.py",
+   "lineRange": [
+    4,
+    9
+   ],
+   "summary": "rolling 평균과 모표준편차(ddof=0)로 볼린저 밴드 중심선·상단·하단을 반환한다.",
+   "tags": [
+    "indicator",
+    "bollinger-bands",
+    "utility"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "type": "function",
+   "name": "calculate_indicators",
+   "filePath": "server-collect_data/indicators/calculate.py",
+   "lineRange": [
+    8,
+    19
+   ],
+   "summary": "DataFrame을 복사한 뒤 종가·거래량으로 EMA·RSI·MACD·볼린저·거래량 MA 컬럼을 추가해 반환한다.",
+   "tags": [
+    "indicator",
+    "orchestration",
+    "data-pipeline"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/ema.py:calculate_ema",
+   "type": "function",
+   "name": "calculate_ema",
+   "filePath": "server-collect_data/indicators/ema.py",
+   "lineRange": [
+    1,
+    2
+   ],
+   "summary": "주어진 span으로 시리즈의 지수이동평균을 계산한다.",
+   "tags": [
+    "indicator",
+    "ema",
+    "utility"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/macd.py:calculate_macd",
+   "type": "function",
+   "name": "calculate_macd",
+   "filePath": "server-collect_data/indicators/macd.py",
+   "lineRange": [
+    2,
+    7
+   ],
+   "summary": "12/26 EMA 차이로 MACD를, 9기간 EMA로 시그널을 계산해 튜플로 반환한다.",
+   "tags": [
+    "indicator",
+    "macd",
+    "utility"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/rsi.py:rma",
+   "type": "function",
+   "name": "rma",
+   "filePath": "server-collect_data/indicators/rsi.py",
+   "lineRange": [
+    4,
+    20
+   ],
+   "summary": "첫 유효값 이후 period 구간 평균으로 시드하고 (이전×(n−1)+현재)/n 재귀로 Wilder RMA를 계산한다.",
+   "tags": [
+    "indicator",
+    "smoothing",
+    "utility"
+   ],
+   "complexity": "moderate"
+  },
+  {
+   "id": "function:server-collect_data/indicators/rsi.py:calculate_rsi_and_sma_rsi",
+   "type": "function",
+   "name": "calculate_rsi_and_sma_rsi",
+   "filePath": "server-collect_data/indicators/rsi.py",
+   "lineRange": [
+    23,
+    35
+   ],
+   "summary": "상승·하락분을 RMA로 평활해 RSI를 구하고 RSI의 이동평균(시그널)과 함께 반환한다.",
+   "tags": [
+    "indicator",
+    "rsi",
+    "utility"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/indicators/volume_ma.py:calculate_volume_ma",
+   "type": "function",
+   "name": "calculate_volume_ma",
+   "filePath": "server-collect_data/indicators/volume_ma.py",
+   "lineRange": [
+    1,
+    2
+   ],
+   "summary": "거래량 시리즈의 지정 기간 단순 이동평균을 계산한다.",
+   "tags": [
+    "indicator",
+    "volume",
+    "utility"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-collect_data/fetcher/main_fetch.py",
+   "type": "file",
+   "name": "main_fetch.py",
+   "filePath": "server-collect_data/fetcher/main_fetch.py",
+   "summary": "수집 서버의 진입점으로, 60초 주기 루프를 돌며 모든 심볼·간격 조합에 대해 Binance OHLCV를 가져와 PostgreSQL에 저장하는 save_to_db를 호출한다.",
+   "tags": [
+    "entry-point",
+    "scheduler",
+    "data-pipeline",
+    "ohlcv"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-collect_data/fetcher/main_fetch.py:main_loop",
+   "type": "function",
+   "name": "main_loop",
+   "filePath": "server-collect_data/fetcher/main_fetch.py",
+   "lineRange": [
+    5,
+    22
+   ],
+   "summary": "SYMBOLS×INTERVALS를 순회하며 save_to_db를 호출하고, 예외는 로그만 남긴 뒤 경과 시간을 빼고 남은 주기만큼 sleep하는 무한 수집 루프.",
+   "tags": [
+    "scheduler",
+    "loop",
+    "data-collection"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-frontend/pages/backtest.py",
+   "type": "file",
+   "name": "backtest.py",
+   "filePath": "server-frontend/pages/backtest.py",
+   "summary": "Streamlit 백테스트 페이지로, 코인·간격·기간과 보조지표 조건 행(지표/연산자/값 또는 지표)을 입력받아 'and'로 이은 strategy_sql을 만들고 FastAPI query 서비스의 /save_strategy 등에 HTTP 요청을 보내 결과를 보여 준다.",
+   "tags": [
+    "component",
+    "ui",
+    "streamlit",
+    "backtest",
+    "api-client"
+   ],
+   "complexity": "moderate",
+   "languageNotes": "함수 없이 스크립트 형태로 위에서 아래로 실행되는 Streamlit 페이지이며, st.session_state로 동적 조건 목록 상태를 유지한다."
+  },
+  {
+   "id": "file:server-query/test_query.py",
+   "type": "file",
+   "name": "test_query.py",
+   "filePath": "server-query/test_query.py",
+   "summary": "FastAPI query 서비스(main_query.app)를 TestClient로 검증하는 pytest 모음으로, init_db.py로 DB를 초기화한 뒤 OHLCV·캔들 조회와 잘못된 파라미터·전략 문법에 대한 오류 응답을 심볼×간격 파라미터화로 테스트한다.",
+   "tags": [
+    "test",
+    "api-test",
+    "pytest",
+    "fastapi"
+   ],
+   "complexity": "moderate",
+   "languageNotes": "pytest.mark.parametrize를 중첩해 SYMBOLS×INTERVALS(×케이스) 조합을 자동 생성한다."
+  },
+  {
+   "id": "function:server-query/test_query.py:setup_database",
+   "type": "function",
+   "name": "setup_database",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    16,
+    19
+   ],
+   "summary": "세션 시작 시 subprocess로 init_db.py를 실행해 테스트 DB를 초기화하고 성공 여부를 단언하는 autouse fixture.",
+   "tags": [
+    "test",
+    "fixture",
+    "database"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-query/test_query.py:client",
+   "type": "function",
+   "name": "client",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    23,
+    24
+   ],
+   "summary": "main_query의 FastAPI app을 감싼 TestClient를 제공하는 fixture.",
+   "tags": [
+    "test",
+    "fixture",
+    "fastapi"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-query/test_query.py:test_read_ohlcv",
+   "type": "function",
+   "name": "test_read_ohlcv",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    30,
+    42
+   ],
+   "summary": "각 심볼·간격의 OHLCV 조회 엔드포인트가 200과 기대 컬럼을 가진 데이터를 반환하는지 검증한다.",
+   "tags": [
+    "test",
+    "api-test",
+    "ohlcv"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-query/test_query.py:test_candle_data",
+   "type": "function",
+   "name": "test_candle_data",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    53,
+    69
+   ],
+   "summary": "캔들 데이터 엔드포인트가 리스트 형식의 올바른 캔들 레코드를 반환하는지 검증한다.",
+   "tags": [
+    "test",
+    "api-test",
+    "candle"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-query/test_query.py:test_candle_data_invalid",
+   "type": "function",
+   "name": "test_candle_data_invalid",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    85,
+    97
+   ],
+   "summary": "잘못된 exit_time 등 비정상 파라미터에 대해 캔들 엔드포인트가 기대한 오류 메시지를 반환하는지 검증한다.",
+   "tags": [
+    "test",
+    "validation",
+    "error-handling"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "function:server-query/test_query.py:test_strategy_invalid",
+   "type": "function",
+   "name": "test_strategy_invalid",
+   "filePath": "server-query/test_query.py",
+   "lineRange": [
+    113,
+    126
+   ],
+   "summary": "문법이 잘못된 strategy_sql을 /save_strategy에 POST하면 500과 'Error while running strategy'가 반환되는지 검증한다.",
+   "tags": [
+    "test",
+    "validation",
+    "strategy"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:shared/symbols_intervals.py",
+   "type": "file",
+   "name": "symbols_intervals.py",
+   "filePath": "shared/symbols_intervals.py",
+   "summary": "수집·조회·프론트엔드 서비스가 공유하는 지원 코인 심볼(BTC, ETH, XRP, SOL)과 캔들 간격(15m, 1h, 4h, 1d) 상수 목록.",
+   "tags": [
+    "config",
+    "constants",
+    "shared"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "file:server-query/filtered_func.py",
+   "type": "file",
+   "name": "filtered_func.py",
+   "filePath": "server-query/filtered_func.py",
+   "summary": "사용자 전략 SQL 조건으로 LEFT JOIN LATERAL 기반 백테스트를 실행하고, 결과를 `filtered` 테이블에 저장한 뒤 승률·기대값·MDD 등 통계를 계산하는 백테스트 핵심 모듈. strategy_sql과 기간 값을 SQL 문자열에 직접 삽입해 SQL injection 위험이 있고, MDD·NaN 처리 등 통계 계산에 알려진 문제가 있다.",
+   "tags": [
+    "backtest",
+    "service",
+    "sql",
+    "known-issue",
+    "statistics"
+   ],
+   "complexity": "complex",
+   "languageNotes": "PostgreSQL `LEFT JOIN LATERAL ... ORDER BY timestamp LIMIT 1`로 진입 캔들마다 첫 청산 캔들을 찾는 패턴을 쓰고, 수익률·누적수익률(cumprod)은 pandas로 계산한다."
+  },
+  {
+   "id": "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+   "type": "function",
+   "name": "run_conditional_lateral_backtest",
+   "filePath": "server-query/filtered_func.py",
+   "summary": "`{symbol}_{interval}` 테이블에서 strategy_sql 조건과 close > low*1.005를 만족하는 모든 캔들을 진입으로 잡고, SL=진입 캔들 low, TP=close+(close−low)·rr로 두어 LATERAL JOIN으로 이후 첫 low<=SL 또는 high>=TP 캔들을 청산으로 찾는다(SL 우선 판정, 청산 없으면 OPEN). 알려진 문제: strategy_sql·start/end time을 SQL 텍스트에 직접 보간(injection 위험), 이전 포지션 보유 여부를 확인하지 않아 진입이 겹칠 수 있음, 바깥 쿼리에 ORDER BY가 없는데 cum_profit_rate를 행 순서대로 cumprod함.",
+   "tags": [
+    "backtest",
+    "sql-injection",
+    "known-issue",
+    "lateral-join",
+    "strategy"
+   ],
+   "complexity": "complex",
+   "lineRange": [
+    8,
+    106
+   ]
+  },
+  {
+   "id": "function:server-query/filtered_func.py:save_result_to_table",
+   "type": "function",
+   "name": "save_result_to_table",
+   "filePath": "server-query/filtered_func.py",
+   "summary": "백테스트 결과 DataFrame을 `filtered` 테이블에 저장한다. 테이블이 없으면 생성(entry_time PRIMARY KEY)하고 매 실행마다 기존 행을 DELETE로 비운 뒤 append하므로 항상 최신 1회 결과만 남는다.",
+   "tags": [
+    "persistence",
+    "database",
+    "backtest",
+    "side-effect"
+   ],
+   "complexity": "moderate",
+   "lineRange": [
+    109,
+    137
+   ]
+  },
+  {
+   "id": "function:server-query/filtered_func.py:calculate_statics",
+   "type": "function",
+   "name": "calculate_statics",
+   "filePath": "server-query/filtered_func.py",
+   "summary": "`filtered` 테이블 전체를 읽어 TP/SL 건수·승률·기대값·수익/손실 통계·MDD·최종 누적수익률을 dict로 반환한다. 알려진 문제(합성 데이터로 검증): MDD를 상대 낙폭이 아닌 cum_profit_rate의 최대 %p 하락 구간으로 고르고 초기 자본을 무시함(실제 −60% → 코드 −25% 예시), TP/SL 행이 1개면 std가 NaN이고 `NaN or 0.0`이 NaN으로 남아 JSON 직렬화 실패(500), ORDER BY 없는 `SELECT *`라 결과가 행 순서에 의존함.",
+   "tags": [
+    "statistics",
+    "mdd",
+    "known-issue",
+    "backtest",
+    "metrics"
+   ],
+   "complexity": "complex",
+   "lineRange": [
+    140,
+    226
+   ]
+  },
+  {
+   "id": "file:server-query/get_data.py",
+   "type": "file",
+   "name": "get_data.py",
+   "filePath": "server-query/get_data.py",
+   "summary": "PostgreSQL 테이블에서 지정 컬럼을 선택·범위 필터·정렬해 pandas로 읽고, inf/NaN 행 제거와 timestamptz 문자열 변환 후 dict 리스트로 반환하는 데이터 조회 헬퍼 모듈. OHLCV 테이블과 `filtered` 결과 테이블용 래퍼를 제공한다.",
+   "tags": [
+    "data-access",
+    "utility",
+    "database",
+    "serialization"
+   ],
+   "complexity": "moderate"
+  },
+  {
+   "id": "function:server-query/get_data.py:wrap_strs_with_quote",
+   "type": "function",
+   "name": "wrap_strs_with_quote",
+   "filePath": "server-query/get_data.py",
+   "summary": "문자열 또는 문자열 리스트를 큰따옴표로 감싼 SQL 컬럼 목록 문자열로 만든다.",
+   "tags": [
+    "utility",
+    "sql",
+    "formatting"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    7,
+    10
+   ]
+  },
+  {
+   "id": "function:server-query/get_data.py:get_data_from_table",
+   "type": "function",
+   "name": "get_data_from_table",
+   "filePath": "server-query/get_data.py",
+   "summary": "테이블명·반환 컬럼·정렬 컬럼과 선택적 단일 필터(min/max → BETWEEN, >=, <=)로 SELECT 쿼리를 구성해 실행하고, inf→NaN 치환 후 NULL 포함 행을 버리고 datetime을 ISO 문자열로 바꿔 records로 반환한다. 값은 바인딩하지만 테이블·컬럼·filter 식별자는 f-string으로 삽입하며, DB 예외는 print 후 빈 리스트로 삼킨다.",
+   "tags": [
+    "data-access",
+    "query-builder",
+    "database",
+    "validation"
+   ],
+   "complexity": "moderate",
+   "lineRange": [
+    13,
+    80
+   ]
+  },
+  {
+   "id": "function:server-query/get_data.py:get_ohlcv_data",
+   "type": "function",
+   "name": "get_ohlcv_data",
+   "filePath": "server-query/get_data.py",
+   "summary": "`{symbol}_{interval}` 소문자 테이블에서 timestamp/open/high/low/close/volume을 선택적 범위 필터와 함께 조회하는 래퍼.",
+   "tags": [
+    "data-access",
+    "ohlcv",
+    "wrapper"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    83,
+    107
+   ]
+  },
+  {
+   "id": "function:server-query/get_data.py:get_filtered_data",
+   "type": "function",
+   "name": "get_filtered_data",
+   "filePath": "server-query/get_data.py",
+   "summary": "`filtered` 백테스트 결과 테이블에서 진입/청산 시각, 심볼, 인터벌, 진입가, SL, TP 컬럼을 조회하는 래퍼.",
+   "tags": [
+    "data-access",
+    "backtest",
+    "wrapper"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    110,
+    124
+   ]
+  },
+  {
+   "id": "file:server-query/main_query.py",
+   "type": "file",
+   "name": "main_query.py",
+   "filePath": "server-query/main_query.py",
+   "summary": "조회·백테스트 서버의 FastAPI 앱 진입점으로, CORS 전체 허용 설정과 함께 OHLCV 조회, 전략 저장·실행(POST /save_strategy), 수익률·TP/SL 통계, 시간 범위, 보조지표 목록·데이터 등 11개 엔드포인트를 노출한다. Streamlit 프론트엔드가 호출하는 백엔드 API다.",
+   "tags": [
+    "entry-point",
+    "api-handler",
+    "fastapi",
+    "backtest",
+    "tested"
+   ],
+   "complexity": "complex",
+   "languageNotes": "FastAPI 데코레이터 라우팅과 Pydantic BaseModel 요청 검증을 사용하며, 일부 핸들러는 SQLAlchemy text()로 직접 쿼리한다."
+  },
+  {
+   "id": "function:server-query/main_query.py:read_filtered_ohlcv",
+   "type": "function",
+   "name": "read_filtered_ohlcv",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-ohlcv 핸들러: get_filtered_data로 백테스트 진입/청산 결과 목록을 반환한다.",
+   "tags": [
+    "api-handler",
+    "backtest",
+    "query"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    33,
+    39
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_candle_data",
+   "type": "function",
+   "name": "get_candle_data",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-candle-data 핸들러: 진입·청산 시각 형식과 순서, symbol/interval 화이트리스트를 검증한 뒤 해당 구간의 OHLCV 캔들을 반환한다.",
+   "tags": [
+    "api-handler",
+    "validation",
+    "ohlcv"
+   ],
+   "complexity": "moderate",
+   "lineRange": [
+    44,
+    68
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:read_ohlcv",
+   "type": "function",
+   "name": "read_ohlcv",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /ohlcv/{symbol}/{interval} 핸들러: symbol/interval을 SYMBOLS·INTERVALS로 검증하고 전체 OHLCV 데이터를 반환한다.",
+   "tags": [
+    "api-handler",
+    "ohlcv",
+    "validation"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    73,
+    83
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:save_strategy",
+   "type": "function",
+   "name": "save_strategy",
+   "filePath": "server-query/main_query.py",
+   "summary": "POST /save_strategy 핸들러: StrategyRequest로 run_conditional_lateral_backtest를 실행하고 save_result_to_table로 `filtered`에 저장한 뒤 행 수와 최종 누적수익률을 반환한다. 요청의 strategy_sql이 검증 없이 SQL에 삽입되는 경로다.",
+   "tags": [
+    "api-handler",
+    "backtest",
+    "known-issue",
+    "strategy"
+   ],
+   "complexity": "moderate",
+   "lineRange": [
+    98,
+    118
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_filtered_profit_rate",
+   "type": "function",
+   "name": "get_filtered_profit_rate",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-profit-rate 핸들러: 수익률 그래프용으로 `filtered`의 entry_time, profit_rate, cum_profit_rate를 반환한다.",
+   "tags": [
+    "api-handler",
+    "chart-data",
+    "backtest"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    123,
+    132
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+   "type": "function",
+   "name": "get_filtered_tp_sl_rate",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-tp-sl-rate 핸들러: calculate_statics 결과(승률·기대값·MDD 등)를 반환하며, 통계 쪽 NaN 문제로 500이 날 수 있다.",
+   "tags": [
+    "api-handler",
+    "statistics",
+    "known-issue"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    137,
+    143
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_time_range",
+   "type": "function",
+   "name": "get_time_range",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /time-range 핸들러: `{symbol}_{interval}` 테이블의 MIN/MAX timestamp를 ISO 문자열로 반환한다. symbol/interval 화이트리스트 검증 없이 테이블명을 f-string으로 만든다.",
+   "tags": [
+    "api-handler",
+    "time-range",
+    "known-issue"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    148,
+    165
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_filtered_entry_time_range",
+   "type": "function",
+   "name": "get_filtered_entry_time_range",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-time-range 핸들러: `filtered` 테이블 entry_time의 최소·최대값을 반환한다.",
+   "tags": [
+    "api-handler",
+    "time-range",
+    "backtest"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    169,
+    187
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_distinct_indicators",
+   "type": "function",
+   "name": "get_distinct_indicators",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /what-indicators 핸들러: `filtered`의 what_indicators 문자열을 'and'로 분리해 사용된 보조지표 이름 집합을 정렬해 반환한다.",
+   "tags": [
+    "api-handler",
+    "indicators",
+    "parsing"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    191,
+    207
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_indicator_data",
+   "type": "function",
+   "name": "get_indicator_data",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /indicator-data 핸들러: boll/rsi/macd 등 지표를 컬럼 묶음으로 매핑해 기간 내 값을 조회하고, inf/NaN·중복을 제거한 뒤 ema·boll은 main, 나머지는 sub 차트 영역으로 표시한 long-format 리스트를 반환한다. indicator 컬럼명과 테이블명이 쿼리 문자열에 직접 들어간다.",
+   "tags": [
+    "api-handler",
+    "indicators",
+    "chart-data",
+    "serialization"
+   ],
+   "complexity": "moderate",
+   "lineRange": [
+    211,
+    270
+   ]
+  },
+  {
+   "id": "function:server-query/main_query.py:get_indicators_in_range",
+   "type": "function",
+   "name": "get_indicators_in_range",
+   "filePath": "server-query/main_query.py",
+   "summary": "GET /filtered-indicators 핸들러: 지정 entry_time 구간의 `filtered` 행에서 사용된 보조지표를 모아 ' and '로 이은 문자열로 반환한다.",
+   "tags": [
+    "api-handler",
+    "indicators",
+    "backtest"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    274,
+    297
+   ]
+  },
+  {
+   "id": "class:server-query/main_query.py:StrategyRequest",
+   "type": "class",
+   "name": "StrategyRequest",
+   "filePath": "server-query/main_query.py",
+   "summary": "POST /save_strategy 요청 본문 Pydantic 모델: symbol, interval, strategy_sql, risk_reward_ratio와 선택적 start_time/end_time.",
+   "tags": [
+    "data-model",
+    "validation",
+    "pydantic"
+   ],
+   "complexity": "simple",
+   "lineRange": [
+    87,
+    93
+   ]
+  },
+  {
+   "id": "file:shared/connect_db.py",
+   "type": "file",
+   "name": "connect_db.py",
+   "filePath": "shared/connect_db.py",
+   "summary": "프로젝트 루트 `.env`에서 POSTGRES_* 환경변수를 읽어 PostgreSQL 접속 URL을 만들고 모듈 전역 SQLAlchemy `engine`을 생성하는 공용 DB 연결 모듈. 수집 서버와 조회 서버가 함께 사용한다.",
+   "tags": [
+    "config",
+    "database",
+    "singleton",
+    "shared"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+   "type": "endpoint",
+   "name": "GET /filtered-ohlcv",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-ohlcv` (핸들러 read_filtered_ohlcv). get_filtered_data로 백테스트 진입/청산 결과 목록을 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+   "type": "endpoint",
+   "name": "GET /filtered-candle-data",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-candle-data` (핸들러 get_candle_data). 진입·청산 시각 형식과 순서, symbol/interval 화이트리스트를 검증한 뒤 해당 구간의 OHLCV 캔들을 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "moderate"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /ohlcv/{symbol}/{interval}",
+   "type": "endpoint",
+   "name": "GET /ohlcv/{symbol}/{interval}",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /ohlcv/{symbol}/{interval}` (핸들러 read_ohlcv). symbol/interval을 SYMBOLS·INTERVALS로 검증하고 전체 OHLCV 데이터를 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:POST /save_strategy",
+   "type": "endpoint",
+   "name": "POST /save_strategy",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `POST /save_strategy` (핸들러 save_strategy). StrategyRequest로 run_conditional_lateral_backtest를 실행하고 save_result_to_table로 `filtered`에 저장한 뒤 행 수와 최종 누적수익률을 반환한다. 요청의 strategy_sql이 검증 없이 SQL에 삽입되는 경로다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "moderate"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+   "type": "endpoint",
+   "name": "GET /filtered-profit-rate",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-profit-rate` (핸들러 get_filtered_profit_rate). 수익률 그래프용으로 `filtered`의 entry_time, profit_rate, cum_profit_rate를 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+   "type": "endpoint",
+   "name": "GET /filtered-tp-sl-rate",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-tp-sl-rate` (핸들러 get_filtered_tp_sl_rate). calculate_statics 결과(승률·기대값·MDD 등)를 반환하며, 통계 쪽 NaN 문제로 500이 날 수 있다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /time-range",
+   "type": "endpoint",
+   "name": "GET /time-range",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /time-range` (핸들러 get_time_range). `{symbol}_{interval}` 테이블의 MIN/MAX timestamp를 ISO 문자열로 반환한다. symbol/interval 화이트리스트 검증 없이 테이블명을 f-string으로 만든다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-time-range",
+   "type": "endpoint",
+   "name": "GET /filtered-time-range",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-time-range` (핸들러 get_filtered_entry_time_range). `filtered` 테이블 entry_time의 최소·최대값을 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /what-indicators",
+   "type": "endpoint",
+   "name": "GET /what-indicators",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /what-indicators` (핸들러 get_distinct_indicators). `filtered`의 what_indicators 문자열을 'and'로 분리해 사용된 보조지표 이름 집합을 정렬해 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /indicator-data",
+   "type": "endpoint",
+   "name": "GET /indicator-data",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /indicator-data` (핸들러 get_indicator_data). boll/rsi/macd 등 지표를 컬럼 묶음으로 매핑해 기간 내 값을 조회하고, inf/NaN·중복을 제거한 뒤 ema·boll은 main, 나머지는 sub 차트 영역으로 표시한 long-format 리스트를 반환한다. indicator 컬럼명과 테이블명이 쿼리 문자열에 직접 들어간다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "moderate"
+  },
+  {
+   "id": "endpoint:server-query/main_query.py:GET /filtered-indicators",
+   "type": "endpoint",
+   "name": "GET /filtered-indicators",
+   "filePath": "server-query/main_query.py",
+   "summary": "FastAPI 엔드포인트 `GET /filtered-indicators` (핸들러 get_indicators_in_range). 지정 entry_time 구간의 `filtered` 행에서 사용된 보조지표를 모아 ' and '로 이은 문자열로 반환한다.",
+   "tags": [
+    "endpoint",
+    "fastapi",
+    "rest-api"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "service:server-collect_data/.dockerignore",
+   "type": "service",
+   "name": ".dockerignore",
+   "filePath": "server-collect_data/.dockerignore",
+   "summary": "collect_data 이미지 빌드 시 제외할 경로를 지정하기 위한 빈 Docker ignore 파일로, 현재 아무 규칙도 정의되어 있지 않습니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "build-system"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "service:server-collect_data/Dockerfile",
+   "type": "service",
+   "name": "Dockerfile",
+   "filePath": "server-collect_data/Dockerfile",
+   "summary": "python:3.11-slim 기반으로 server-collect_data, shared 모듈, .env를 복사하고 의존성을 설치한 뒤 Binance 데이터 수집기(fetcher/main_fetch.py)를 실행하는 collect_data 서비스 이미지를 빌드합니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "deployment",
+    "data-collection"
+   ],
+   "complexity": "simple",
+   "languageNotes": "빌드 컨텍스트가 레포 루트라서 COPY 경로가 server-collect_data/ 접두사를 가지며, .env를 이미지에 직접 굽는 점이 특징입니다."
+  },
+  {
+   "id": "service:server-frontend/.dockerignore",
+   "type": "service",
+   "name": ".dockerignore",
+   "filePath": "server-frontend/.dockerignore",
+   "summary": "frontend 이미지 빌드 시 제외할 경로를 지정하기 위한 빈 Docker ignore 파일로, 현재 아무 규칙도 정의되어 있지 않습니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "build-system"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "service:server-frontend/Dockerfile",
+   "type": "service",
+   "name": "Dockerfile",
+   "filePath": "server-frontend/Dockerfile",
+   "summary": "python:3.11-slim 기반으로 Streamlit 프론트엔드(server-frontend)와 .streamlit 설정, shared/symbols_intervals.py를 복사하고 8501 포트에서 Main.py를 실행하는 frontend 서비스 이미지를 빌드합니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "deployment",
+    "streamlit"
+   ],
+   "complexity": "simple",
+   "languageNotes": "COPY shared/ ./shared/symbols_intervals.py 는 디렉터리를 파일 이름 경로로 복사하므로 의도와 달리 symbols_intervals.py라는 디렉터리가 생성될 수 있습니다."
+  },
+  {
+   "id": "service:server-query/.dockerignore",
+   "type": "service",
+   "name": ".dockerignore",
+   "filePath": "server-query/.dockerignore",
+   "summary": "query 이미지 빌드 시 제외할 경로를 지정하기 위한 빈 Docker ignore 파일로, 현재 아무 규칙도 정의되어 있지 않습니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "build-system"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "service:server-query/Dockerfile",
+   "type": "service",
+   "name": "Dockerfile",
+   "filePath": "server-query/Dockerfile",
+   "summary": "python:3.11-slim 기반으로 server-query, shared 모듈, .env를 복사하고 uvicorn으로 FastAPI 앱(server-query.main_query:app)을 8082 포트에서 실행하는 query 서비스 이미지를 빌드합니다.",
+   "tags": [
+    "containerization",
+    "infrastructure",
+    "deployment",
+    "api-server"
+   ],
+   "complexity": "simple"
+  },
+  {
+   "id": "pipeline:.github/workflows/workflow.yml",
+   "type": "pipeline",
+   "name": "workflow.yml",
+   "filePath": ".github/workflows/workflow.yml",
+   "summary": "main 브랜치 push 시 실행되는 GitHub Actions 워크플로로, test(Postgres 15 서비스 컨테이너 + init_db.py로 스키마 초기화 + pytest test_query.py) → push(QEMU/Buildx로 query·frontend·collect_data 멀티아키텍처 이미지를 Docker Hub rth2608/*에 푸시, SSH로 EC2에서 git reset·docker-compose pull) → deploy(SSH로 docker-compose up -d) 3단계 파이프라인입니다.",
+   "tags": [
+    "ci-cd",
+    "deployment",
+    "testing",
+    "docker",
+    "github-actions"
+   ],
+   "complexity": "moderate",
+   "languageNotes": "jobs 간 needs 체인으로 순차 실행되며, secrets로 .env를 런타임에 생성하고 appleboy/ssh-action으로 원격 배포합니다."
+  },
+  {
+   "id": "document:README.md",
+   "type": "document",
+   "name": "README.md",
+   "summary": "PostgreSQL 테이블 초기화와 Docker Compose 컨테이너 재빌드·실행 명령, ML 전략 추천 테스트 실행 방법을 정리한 짧은 운영 메모.",
+   "tags": [
+    "documentation",
+    "entry-point",
+    "docker",
+    "operations"
+   ],
+   "complexity": "simple",
+   "filePath": "README.md"
+  },
+  {
+   "id": "service:docker-compose.yml",
+   "type": "service",
+   "name": "docker-compose.yml",
+   "summary": "collect_data·db(postgres:15)·query(FastAPI, 8082)·frontend(Streamlit, 8501) 4개 서비스를 trading_net 네트워크와 pgdata 볼륨으로 묶어 실행하는 Compose 정의. 각 앱 서비스는 shared 디렉터리를 마운트하고 .env를 공유한다.",
+   "tags": [
+    "orchestration",
+    "infrastructure",
+    "containerization",
+    "postgresql",
+    "deployment"
+   ],
+   "complexity": "moderate",
+   "filePath": "docker-compose.yml",
+   "languageNotes": "depends_on으로 기동 순서(db → query → frontend)를 지정하지만 헬스체크 기반 대기는 아니며, 소스 디렉터리를 볼륨 마운트해 개발 중 코드 변경이 바로 반영된다."
+  },
+  {
+   "id": "service:docker-compose.yml:collect_data",
+   "type": "service",
+   "name": "collect_data",
+   "summary": "server-collect_data/Dockerfile로 빌드되어 main_fetch.py를 실행하는 OHLCV 수집 컨테이너. db에 의존하며 항상 재시작된다.",
+   "tags": [
+    "data-collection",
+    "worker",
+    "containerization"
+   ],
+   "complexity": "simple",
+   "filePath": "docker-compose.yml"
+  },
+  {
+   "id": "service:docker-compose.yml:db",
+   "type": "service",
+   "name": "db",
+   "summary": "postgres:15 이미지 기반 PostgreSQL 컨테이너(postgres-db). 5432 포트를 노출하고 pgdata 볼륨에 데이터를 영속화한다.",
+   "tags": [
+    "database",
+    "postgresql",
+    "containerization"
+   ],
+   "complexity": "simple",
+   "filePath": "docker-compose.yml"
+  },
+  {
+   "id": "service:docker-compose.yml:query",
+   "type": "service",
+   "name": "query",
+   "summary": "server-query/Dockerfile로 빌드되는 FastAPI 백테스트·조회 API 컨테이너. 8082 포트를 노출한다.",
+   "tags": [
+    "api",
+    "fastapi",
+    "containerization"
+   ],
+   "complexity": "simple",
+   "filePath": "docker-compose.yml"
+  },
+  {
+   "id": "service:docker-compose.yml:frontend",
+   "type": "service",
+   "name": "frontend",
+   "summary": "server-frontend/Dockerfile로 빌드되는 Streamlit UI 컨테이너. API_URL=http://query:8082로 query 서비스를 호출하며 8501 포트를 노출한다.",
+   "tags": [
+    "frontend",
+    "streamlit",
+    "containerization"
+   ],
+   "complexity": "simple",
+   "filePath": "docker-compose.yml"
+  },
+  {
+   "id": "file:server-collect_data/fetcher/__init__.py",
+   "type": "file",
+   "name": "__init__.py",
+   "summary": "fetcher 패키지를 Python 패키지로 인식시키기 위한 빈 __init__ 파일.",
+   "tags": [
+    "entry-point",
+    "package-marker",
+    "python"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/__init__.py"
+  },
+  {
+   "id": "file:server-collect_data/indicators/__init__.py",
+   "type": "file",
+   "name": "__init__.py",
+   "summary": "indicators(보조지표 계산) 패키지를 Python 패키지로 인식시키기 위한 빈 __init__ 파일.",
+   "tags": [
+    "entry-point",
+    "package-marker",
+    "python"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/indicators/__init__.py"
+  },
+  {
+   "id": "file:shared/__init__.py",
+   "type": "file",
+   "name": "__init__.py",
+   "summary": "서비스 간 공용 모듈(connect_db, symbols_intervals)을 담는 shared 패키지의 빈 __init__ 파일.",
+   "tags": [
+    "entry-point",
+    "package-marker",
+    "python"
+   ],
+   "complexity": "simple",
+   "filePath": "shared/__init__.py"
+  },
+  {
+   "id": "file:server-collect_data/fetcher/binance_client.py",
+   "type": "file",
+   "name": "binance_client.py",
+   "summary": "Binance klines REST API를 호출해 OHLCV 캔들을 DataFrame으로 가져오고, DB의 마지막 저장 시각을 조회해 증분 수집 시작점을 계산하는 클라이언트 모듈.",
+   "tags": [
+    "api-client",
+    "binance",
+    "data-collection",
+    "utility"
+   ],
+   "complexity": "moderate",
+   "filePath": "server-collect_data/fetcher/binance_client.py"
+  },
+  {
+   "id": "function:server-collect_data/fetcher/binance_client.py:get_binance_start_time",
+   "type": "function",
+   "name": "get_binance_start_time",
+   "summary": "Binance에서 해당 심볼·인터벌의 가장 오래된 캔들 1개를 조회해 최초 수집 시작 시각(ms)을 반환한다.",
+   "tags": [
+    "binance",
+    "api-client",
+    "timestamp"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/binance_client.py",
+   "lineRange": [
+    9,
+    15
+   ]
+  },
+  {
+   "id": "function:server-collect_data/fetcher/binance_client.py:get_latest_timestamp",
+   "type": "function",
+   "name": "get_latest_timestamp",
+   "summary": "심볼·인터벌별 OHLCV 테이블에서 마지막 timestamp를 조회해 다음 증분 수집 시작 시각을 계산한다.",
+   "tags": [
+    "database",
+    "sqlalchemy",
+    "incremental-load"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/binance_client.py",
+   "lineRange": [
+    17,
+    37
+   ]
+  },
+  {
+   "id": "function:server-collect_data/fetcher/binance_client.py:fetch_from_binance",
+   "type": "function",
+   "name": "fetch_from_binance",
+   "summary": "Binance klines 엔드포인트에서 최대 limit개의 캔들을 받아 시간·OHLCV 컬럼을 가진 pandas DataFrame으로 변환한다.",
+   "tags": [
+    "binance",
+    "api-client",
+    "pandas",
+    "serialization"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/binance_client.py",
+   "lineRange": [
+    39,
+    58
+   ]
+  },
+  {
+   "id": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "type": "file",
+   "name": "fetch_ohlcv.py",
+   "summary": "심볼·인터벌별 OHLCV 테이블을 동적으로 생성하고, Binance에서 새 캔들을 받아 기존 데이터와 합친 뒤 보조지표를 계산해 PostgreSQL에 저장하는 수집 파이프라인 핵심 모듈.",
+   "tags": [
+    "data-pipeline",
+    "service",
+    "database",
+    "binance",
+    "indicators"
+   ],
+   "complexity": "moderate",
+   "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "languageNotes": "테이블명을 f-string으로 동적 구성(symbol_interval)하는 방식이라 입력 값이 고정 목록(SYMBOLS×INTERVALS)이어야 안전하다."
+  },
+  {
+   "id": "function:server-collect_data/fetcher/fetch_ohlcv.py:to_kst",
+   "type": "function",
+   "name": "to_kst",
+   "summary": "datetime을 한국 표준시(UTC+9)로 변환하는 작은 헬퍼.",
+   "tags": [
+    "utility",
+    "timezone",
+    "datetime"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "lineRange": [
+    11,
+    12
+   ]
+  },
+  {
+   "id": "function:server-collect_data/fetcher/fetch_ohlcv.py:table_exists",
+   "type": "function",
+   "name": "table_exists",
+   "summary": "information_schema를 조회해 심볼·인터벌용 OHLCV 테이블이 이미 존재하는지 확인한다.",
+   "tags": [
+    "database",
+    "sqlalchemy",
+    "validation"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "lineRange": [
+    14,
+    24
+   ]
+  },
+  {
+   "id": "function:server-collect_data/fetcher/fetch_ohlcv.py:create_dynamic_table",
+   "type": "function",
+   "name": "create_dynamic_table",
+   "summary": "심볼·인터벌 조합마다 OHLCV와 EMA·볼린저·RSI·MACD·거래량 이동평균 컬럼을 가진 테이블을 CREATE TABLE로 생성한다.",
+   "tags": [
+    "database",
+    "ddl",
+    "schema-definition"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "lineRange": [
+    26,
+    52
+   ]
+  },
+  {
+   "id": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "type": "function",
+   "name": "save_to_db",
+   "summary": "테이블 존재 여부에 따라 수집 시작점을 정하고 Binance 캔들을 받아 기존 데이터와 병합, calculate_indicators로 지표를 계산한 뒤 신규 행만 DB에 적재한다.",
+   "tags": [
+    "data-pipeline",
+    "database",
+    "incremental-load",
+    "indicators"
+   ],
+   "complexity": "moderate",
+   "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "lineRange": [
+    54,
+    116
+   ]
+  },
+  {
+   "id": "document:server-collect_data/requirements.txt",
+   "type": "document",
+   "name": "requirements.txt",
+   "summary": "데이터 수집 서비스의 Python 의존성 목록(pandas, requests, sqlalchemy, psycopg2-binary, dotenv).",
+   "tags": [
+    "dependencies",
+    "build-system",
+    "python",
+    "data-collection"
+   ],
+   "complexity": "simple",
+   "filePath": "server-collect_data/requirements.txt"
+  },
+  {
+   "id": "document:server-frontend/requirements.txt",
+   "type": "document",
+   "name": "requirements.txt",
+   "summary": "Streamlit 프론트엔드의 Python 의존성 목록(streamlit, pandas, requests, plotly, python-dotenv, sqlalchemy).",
+   "tags": [
+    "dependencies",
+    "build-system",
+    "python",
+    "frontend"
+   ],
+   "complexity": "simple",
+   "filePath": "server-frontend/requirements.txt"
+  },
+  {
+   "id": "document:server-query/requirements.txt",
+   "type": "document",
+   "name": "requirements.txt",
+   "summary": "FastAPI 조회·백테스트 서비스의 Python 의존성 목록(fastapi, uvicorn, sqlalchemy, psycopg2-binary, pandas, python-dotenv, pytest, httpx).",
+   "tags": [
+    "dependencies",
+    "build-system",
+    "python",
+    "api"
+   ],
+   "complexity": "simple",
+   "filePath": "server-query/requirements.txt"
+  },
+  {
+   "id": "config:server-frontend/.streamlit/secrets.toml",
+   "type": "config",
+   "name": "secrets.toml",
+   "summary": "Streamlit 페이지가 st.secrets로 읽는 API_URL을 Docker 내부 query 서비스 주소(http://query:8082)로 지정하는 설정 파일. 실제 비밀값은 없다.",
+   "tags": [
+    "configuration",
+    "streamlit",
+    "api-endpoint"
+   ],
+   "complexity": "simple",
+   "filePath": "server-frontend/.streamlit/secrets.toml"
+  },
+  {
+   "id": "file:server-frontend/Main.py",
+   "type": "file",
+   "name": "Main.py",
+   "summary": "Streamlit 멀티페이지 앱의 진입 페이지로, 플랫폼 제목과 사이드바에서 기능을 고르라는 안내만 표시한다.",
+   "tags": [
+    "entry-point",
+    "streamlit",
+    "frontend",
+    "component"
+   ],
+   "complexity": "simple",
+   "filePath": "server-frontend/Main.py"
+  },
+  {
+   "id": "file:server-frontend/pages/chart.py",
+   "type": "file",
+   "name": "chart.py",
+   "summary": "저장된 전략 목록을 query API(/filtered-ohlcv, /filtered-indicators, /ohlcv/{symbol}/{interval}, /indicator-data 등)에서 받아 선택한 전략의 진입~청산 구간 캔들과 사용된 보조지표(EMA·볼린저·RSI·MACD 등)를 Plotly 차트로 시각화하는 Streamlit 페이지.",
+   "tags": [
+    "streamlit",
+    "frontend",
+    "visualization",
+    "plotly",
+    "api-consumer"
+   ],
+   "complexity": "complex",
+   "filePath": "server-frontend/pages/chart.py",
+   "languageNotes": "Streamlit 스크립트는 상호작용마다 위에서 아래로 재실행되므로 함수 대신 모듈 최상위 코드로 HTTP 호출과 렌더링이 이어진다."
+  },
+  {
+   "id": "function:server-frontend/pages/chart.py:expand",
+   "type": "function",
+   "name": "expand",
+   "summary": "'boll'·'rsi'·'macd' 같은 지표 약칭을 실제 컬럼 목록(boll_upper/lower/ma, rsi/rsi_signal, macd/macd_signal)으로 펼친다.",
+   "tags": [
+    "utility",
+    "indicators",
+    "mapping"
+   ],
+   "complexity": "simple",
+   "filePath": "server-frontend/pages/chart.py",
+   "lineRange": [
+    44,
+    49
+   ]
+  },
+  {
+   "id": "file:server-frontend/pages/profit_chart.py",
+   "type": "file",
+   "name": "profit_chart.py",
+   "summary": "query API의 /filtered-time-range, /filtered-profit-rate, /filtered-tp-sl-rate를 호출해 백테스트 누적 수익률 차트와 익절/손절 비율 등 핵심 통계를 보여 주는 Streamlit 페이지.",
+   "tags": [
+    "streamlit",
+    "frontend",
+    "visualization",
+    "backtest",
+    "api-consumer"
+   ],
+   "complexity": "moderate",
+   "filePath": "server-frontend/pages/profit_chart.py",
+   "languageNotes": "st.secrets 기본값이 localhost:8080으로 다른 페이지(8082)와 달라, secrets.toml이 없으면 연결이 실패할 수 있다."
+  },
+  {
+   "id": "file:server-query/init_db.py",
+   "type": "file",
+   "name": "init_db.py",
+   "summary": "로컬 PostgreSQL(test DB)에 SYMBOLS×INTERVALS 조합별 OHLCV 테이블을 새로 만들고 임의의 샘플 캔들 데이터를 채워 넣는 개발용 초기화 스크립트.",
+   "tags": [
+    "script",
+    "database",
+    "seed-data",
+    "development"
+   ],
+   "complexity": "moderate",
+   "filePath": "server-query/init_db.py",
+   "languageNotes": "psycopg2로 DROP/CREATE를 직접 실행하며 접속 정보가 하드코딩되어 있어 테스트·로컬 전용이다."
+  },
+  {
+   "id": "function:server-query/init_db.py:create_table",
+   "type": "function",
+   "name": "create_table",
+   "summary": "지정한 테이블을 DROP 후 timestamp PK와 OHLCV 컬럼으로 다시 CREATE한다.",
+   "tags": [
+    "database",
+    "ddl",
+    "seed-data"
+   ],
+   "complexity": "simple",
+   "filePath": "server-query/init_db.py",
+   "lineRange": [
+    20,
+    33
+   ]
+  },
+  {
+   "id": "function:server-query/init_db.py:generate_ohlcv",
+   "type": "function",
+   "name": "generate_ohlcv",
+   "summary": "시작 시각부터 15분 간격으로 기준가 주변의 임의 OHLCV 튜플 목록을 생성한다.",
+   "tags": [
+    "seed-data",
+    "utility",
+    "mock-data"
+   ],
+   "complexity": "simple",
+   "filePath": "server-query/init_db.py",
+   "lineRange": [
+    37,
+    48
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "source": "file:server-collect_data/indicators/boll.py",
+   "target": "function:server-collect_data/indicators/boll.py:calculate_bollinger",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/boll.py",
+   "target": "function:server-collect_data/indicators/boll.py:calculate_bollinger",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/ema.py",
+   "target": "function:server-collect_data/indicators/ema.py:calculate_ema",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/ema.py",
+   "target": "function:server-collect_data/indicators/ema.py:calculate_ema",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/macd.py",
+   "target": "function:server-collect_data/indicators/macd.py:calculate_macd",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/macd.py",
+   "target": "function:server-collect_data/indicators/macd.py:calculate_macd",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/rsi.py",
+   "target": "function:server-collect_data/indicators/rsi.py:rma",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/rsi.py",
+   "target": "function:server-collect_data/indicators/rsi.py:rma",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/rsi.py",
+   "target": "function:server-collect_data/indicators/rsi.py:calculate_rsi_and_sma_rsi",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/rsi.py",
+   "target": "function:server-collect_data/indicators/rsi.py:calculate_rsi_and_sma_rsi",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/volume_ma.py",
+   "target": "function:server-collect_data/indicators/volume_ma.py:calculate_volume_ma",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/indicators/volume_ma.py",
+   "target": "function:server-collect_data/indicators/volume_ma.py:calculate_volume_ma",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "file:server-collect_data/indicators/boll.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "file:server-collect_data/indicators/ema.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "file:server-collect_data/indicators/macd.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "file:server-collect_data/indicators/rsi.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/indicators/calculate.py",
+   "target": "file:server-collect_data/indicators/volume_ma.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "target": "function:server-collect_data/indicators/ema.py:calculate_ema",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "target": "function:server-collect_data/indicators/rsi.py:calculate_rsi_and_sma_rsi",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "target": "function:server-collect_data/indicators/macd.py:calculate_macd",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "target": "function:server-collect_data/indicators/boll.py:calculate_bollinger",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "target": "function:server-collect_data/indicators/volume_ma.py:calculate_volume_ma",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:setup_database",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:setup_database",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:client",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:client",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_read_ohlcv",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_read_ohlcv",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_candle_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_candle_data",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_candle_data_invalid",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_candle_data_invalid",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_strategy_invalid",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "function:server-query/test_query.py:test_strategy_invalid",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/main_fetch.py",
+   "target": "function:server-collect_data/fetcher/main_fetch.py:main_loop",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/main_fetch.py",
+   "target": "function:server-collect_data/fetcher/main_fetch.py:main_loop",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/main_fetch.py",
+   "target": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/fetcher/main_fetch.py",
+   "target": "file:shared/symbols_intervals.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-frontend/pages/backtest.py",
+   "target": "file:shared/symbols_intervals.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "file:server-query/main_query.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/test_query.py",
+   "target": "file:shared/symbols_intervals.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "function:server-collect_data/fetcher/main_fetch.py:main_loop",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/test_query.py:test_read_ohlcv",
+   "target": "function:server-query/main_query.py:read_ohlcv",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/test_query.py:test_candle_data",
+   "target": "function:server-query/main_query.py:get_candle_data",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/test_query.py:test_candle_data_invalid",
+   "target": "function:server-query/main_query.py:get_candle_data",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/test_query.py:test_strategy_invalid",
+   "target": "function:server-query/main_query.py:save_strategy",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "file:server-query/test_query.py",
+   "type": "tested_by",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-frontend/pages/backtest.py",
+   "target": "file:server-query/main_query.py",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:save_result_to_table",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:save_result_to_table",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:calculate_statics",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "function:server-query/filtered_func.py:calculate_statics",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:wrap_strs_with_quote",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:wrap_strs_with_quote",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_data_from_table",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_data_from_table",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_ohlcv_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_ohlcv_data",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_filtered_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "function:server-query/get_data.py:get_filtered_data",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:read_filtered_ohlcv",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:read_filtered_ohlcv",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_candle_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_candle_data",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:read_ohlcv",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:read_ohlcv",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:save_strategy",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:save_strategy",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_profit_rate",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_profit_rate",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_time_range",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_time_range",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_entry_time_range",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_filtered_entry_time_range",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_distinct_indicators",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_distinct_indicators",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_indicator_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_indicator_data",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_indicators_in_range",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "function:server-query/main_query.py:get_indicators_in_range",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "class:server-query/main_query.py:StrategyRequest",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "class:server-query/main_query.py:StrategyRequest",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+   "target": "function:server-query/main_query.py:read_filtered_ohlcv",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+   "target": "function:server-query/main_query.py:get_candle_data",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /ohlcv/{symbol}/{interval}",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /ohlcv/{symbol}/{interval}",
+   "target": "function:server-query/main_query.py:read_ohlcv",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:POST /save_strategy",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:POST /save_strategy",
+   "target": "function:server-query/main_query.py:save_strategy",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+   "target": "function:server-query/main_query.py:get_filtered_profit_rate",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+   "target": "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /time-range",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /time-range",
+   "target": "function:server-query/main_query.py:get_time_range",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-time-range",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-time-range",
+   "target": "function:server-query/main_query.py:get_filtered_entry_time_range",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /what-indicators",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /what-indicators",
+   "target": "function:server-query/main_query.py:get_distinct_indicators",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /indicator-data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /indicator-data",
+   "target": "function:server-query/main_query.py:get_indicator_data",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "endpoint:server-query/main_query.py:GET /filtered-indicators",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "endpoint:server-query/main_query.py:GET /filtered-indicators",
+   "target": "function:server-query/main_query.py:get_indicators_in_range",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/filtered_func.py",
+   "target": "file:shared/connect_db.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/get_data.py",
+   "target": "file:shared/connect_db.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "file:server-query/filtered_func.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "file:server-query/get_data.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "file:shared/connect_db.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-query/main_query.py",
+   "target": "file:shared/symbols_intervals.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "function:server-query/main_query.py:read_filtered_ohlcv",
+   "target": "function:server-query/get_data.py:get_filtered_data",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:get_candle_data",
+   "target": "function:server-query/get_data.py:get_ohlcv_data",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:read_ohlcv",
+   "target": "function:server-query/get_data.py:get_ohlcv_data",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:save_strategy",
+   "target": "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:save_strategy",
+   "target": "function:server-query/filtered_func.py:save_result_to_table",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:get_filtered_profit_rate",
+   "target": "function:server-query/get_data.py:get_data_from_table",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+   "target": "function:server-query/filtered_func.py:calculate_statics",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/get_data.py:get_data_from_table",
+   "target": "function:server-query/get_data.py:wrap_strs_with_quote",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/get_data.py:get_ohlcv_data",
+   "target": "function:server-query/get_data.py:get_data_from_table",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-query/get_data.py:get_filtered_data",
+   "target": "function:server-query/get_data.py:get_data_from_table",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "service:server-collect_data/Dockerfile",
+   "target": "file:server-collect_data/fetcher/main_fetch.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-collect_data/Dockerfile",
+   "target": "file:shared/connect_db.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-collect_data/.dockerignore",
+   "target": "service:server-collect_data/Dockerfile",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "service:server-frontend/Dockerfile",
+   "target": "file:server-frontend/Main.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-frontend/Dockerfile",
+   "target": "file:shared/symbols_intervals.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-frontend/.dockerignore",
+   "target": "service:server-frontend/Dockerfile",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "service:server-query/Dockerfile",
+   "target": "file:server-query/main_query.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-query/Dockerfile",
+   "target": "file:shared/connect_db.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:server-query/.dockerignore",
+   "target": "service:server-query/Dockerfile",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "file:server-query/test_query.py",
+   "type": "triggers",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "file:server-query/init_db.py",
+   "type": "triggers",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "service:server-query/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "service:server-frontend/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "service:server-collect_data/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "pipeline:.github/workflows/workflow.yml",
+   "target": "service:docker-compose.yml",
+   "type": "triggers",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "document:README.md",
+   "target": "service:docker-compose.yml",
+   "type": "documents",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:docker-compose.yml:collect_data",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:docker-compose.yml:db",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:docker-compose.yml:query",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:docker-compose.yml:frontend",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:server-collect_data/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:server-query/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "service:server-frontend/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:collect_data",
+   "target": "service:server-collect_data/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:query",
+   "target": "service:server-query/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:frontend",
+   "target": "service:server-frontend/Dockerfile",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:collect_data",
+   "target": "service:docker-compose.yml:db",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:query",
+   "target": "service:docker-compose.yml:db",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:frontend",
+   "target": "service:docker-compose.yml:query",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "service:docker-compose.yml:collect_data",
+   "target": "file:server-collect_data/fetcher/main_fetch.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:docker-compose.yml:query",
+   "target": "file:server-query/main_query.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:docker-compose.yml:frontend",
+   "target": "file:server-frontend/Main.py",
+   "type": "deploys",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "service:docker-compose.yml",
+   "target": "file:shared/connect_db.py",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_binance_start_time",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_binance_start_time",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_latest_timestamp",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_latest_timestamp",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:fetch_from_binance",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "function:server-collect_data/fetcher/binance_client.py:fetch_from_binance",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/binance_client.py",
+   "target": "file:shared/connect_db.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:to_kst",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:to_kst",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:table_exists",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:table_exists",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:create_dynamic_table",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:create_dynamic_table",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "type": "exports",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "file:server-collect_data/fetcher/binance_client.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "file:server-collect_data/indicators/calculate.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "target": "file:shared/connect_db.py",
+   "type": "imports",
+   "direction": "forward",
+   "weight": 0.7
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_binance_start_time",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/fetcher/binance_client.py:get_latest_timestamp",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/fetcher/binance_client.py:fetch_from_binance",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/indicators/calculate.py:calculate_indicators",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:table_exists",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db",
+   "target": "function:server-collect_data/fetcher/fetch_ohlcv.py:create_dynamic_table",
+   "type": "calls",
+   "direction": "forward",
+   "weight": 0.8
+  },
+  {
+   "source": "document:server-collect_data/requirements.txt",
+   "target": "file:server-collect_data/fetcher/binance_client.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-collect_data/requirements.txt",
+   "target": "file:server-collect_data/fetcher/fetch_ohlcv.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-frontend/requirements.txt",
+   "target": "file:server-frontend/Main.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-frontend/requirements.txt",
+   "target": "file:server-frontend/pages/chart.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-frontend/requirements.txt",
+   "target": "file:server-frontend/pages/profit_chart.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-query/requirements.txt",
+   "target": "file:server-query/main_query.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "document:server-query/requirements.txt",
+   "target": "file:server-query/init_db.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "config:server-frontend/.streamlit/secrets.toml",
+   "target": "file:server-frontend/pages/chart.py",
+   "type": "configures",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "config:server-frontend/.streamlit/secrets.toml",
+   "target": "file:server-frontend/pages/profit_chart.py",
+   "type": "configures",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "config:server-frontend/.streamlit/secrets.toml",
+   "target": "file:server-frontend/pages/backtest.py",
+   "type": "configures",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "file:server-frontend/pages/chart.py",
+   "target": "function:server-frontend/pages/chart.py:expand",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-frontend/pages/chart.py",
+   "target": "file:server-query/main_query.py",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "file:server-frontend/pages/profit_chart.py",
+   "target": "file:server-query/main_query.py",
+   "type": "depends_on",
+   "direction": "forward",
+   "weight": 0.6
+  },
+  {
+   "source": "file:server-frontend/Main.py",
+   "target": "file:server-frontend/pages/chart.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-frontend/Main.py",
+   "target": "file:server-frontend/pages/profit_chart.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  },
+  {
+   "source": "file:server-query/init_db.py",
+   "target": "function:server-query/init_db.py:create_table",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/init_db.py",
+   "target": "function:server-query/init_db.py:generate_ohlcv",
+   "type": "contains",
+   "direction": "forward",
+   "weight": 1.0
+  },
+  {
+   "source": "file:server-query/init_db.py",
+   "target": "file:server-query/main_query.py",
+   "type": "related",
+   "direction": "forward",
+   "weight": 0.5
+  }
+ ],
+ "layers": [
+  {
+   "id": "layer:data-collection",
+   "name": "데이터 수집 계층",
+   "description": "Binance API 클라이언트로 OHLCV 캔들을 주기적으로 가져와 PostgreSQL에 적재하는 collect_data 서버의 fetcher 모듈",
+   "nodeIds": [
+    "file:server-collect_data/fetcher/main_fetch.py",
+    "file:server-collect_data/fetcher/__init__.py",
+    "file:server-collect_data/fetcher/binance_client.py",
+    "file:server-collect_data/fetcher/fetch_ohlcv.py"
+   ]
+  },
+  {
+   "id": "layer:indicators",
+   "name": "지표 계산 계층",
+   "description": "수집된 캔들로 EMA·RSI·MACD·Bollinger Bands·거래량 이동평균 등 기술적 지표를 계산해 저장하는 indicators 모듈",
+   "nodeIds": [
+    "file:server-collect_data/indicators/boll.py",
+    "file:server-collect_data/indicators/calculate.py",
+    "file:server-collect_data/indicators/ema.py",
+    "file:server-collect_data/indicators/macd.py",
+    "file:server-collect_data/indicators/rsi.py",
+    "file:server-collect_data/indicators/volume_ma.py",
+    "file:server-collect_data/indicators/__init__.py"
+   ]
+  },
+  {
+   "id": "layer:shared",
+   "name": "공통 DB·설정 계층",
+   "description": "세 서버가 공통으로 import하는 PostgreSQL 연결(connect_db)과 심볼·인터벌 상수 정의를 담은 shared 패키지",
+   "nodeIds": [
+    "file:shared/symbols_intervals.py",
+    "file:shared/connect_db.py",
+    "file:shared/__init__.py"
+   ]
+  },
+  {
+   "id": "layer:test",
+   "name": "테스트·DB 초기화 계층",
+   "description": "query 서버용 pytest 테스트와 테스트 DB 스키마·데이터를 준비하는 초기화 스크립트",
+   "nodeIds": [
+    "file:server-query/test_query.py",
+    "file:server-query/init_db.py"
+   ]
+  },
+  {
+   "id": "layer:api",
+   "name": "백테스트·조회 API 계층",
+   "description": "FastAPI로 OHLCV·지표 조회, 조건 필터링, 수익률·TP/SL 백테스트, 전략 저장 엔드포인트를 제공하는 query 서버",
+   "nodeIds": [
+    "file:server-query/filtered_func.py",
+    "file:server-query/get_data.py",
+    "file:server-query/main_query.py",
+    "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+    "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+    "endpoint:server-query/main_query.py:GET /ohlcv/{symbol}/{interval}",
+    "endpoint:server-query/main_query.py:POST /save_strategy",
+    "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+    "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+    "endpoint:server-query/main_query.py:GET /time-range",
+    "endpoint:server-query/main_query.py:GET /filtered-time-range",
+    "endpoint:server-query/main_query.py:GET /what-indicators",
+    "endpoint:server-query/main_query.py:GET /indicator-data",
+    "endpoint:server-query/main_query.py:GET /filtered-indicators"
+   ]
+  },
+  {
+   "id": "layer:frontend",
+   "name": "프런트엔드 계층",
+   "description": "Streamlit 멀티페이지 앱으로 차트·백테스트·수익률 화면을 그리며 query API를 호출하는 frontend 서버와 그 secrets 설정",
+   "nodeIds": [
+    "file:server-frontend/pages/backtest.py",
+    "config:server-frontend/.streamlit/secrets.toml",
+    "file:server-frontend/Main.py",
+    "file:server-frontend/pages/chart.py",
+    "file:server-frontend/pages/profit_chart.py"
+   ]
+  },
+  {
+   "id": "layer:infrastructure",
+   "name": "인프라·배포 계층",
+   "description": "각 서버 Dockerfile·.dockerignore, db/collect_data/query/frontend를 묶는 Docker Compose, EC2 배포용 GitHub Actions 워크플로",
+   "nodeIds": [
+    "service:server-collect_data/.dockerignore",
+    "service:server-collect_data/Dockerfile",
+    "service:server-frontend/.dockerignore",
+    "service:server-frontend/Dockerfile",
+    "service:server-query/.dockerignore",
+    "service:server-query/Dockerfile",
+    "pipeline:.github/workflows/workflow.yml",
+    "service:docker-compose.yml",
+    "service:docker-compose.yml:collect_data",
+    "service:docker-compose.yml:db",
+    "service:docker-compose.yml:query",
+    "service:docker-compose.yml:frontend"
+   ]
+  },
+  {
+   "id": "layer:documentation",
+   "name": "문서·의존성 계층",
+   "description": "프로젝트 README와 서버별 Python 의존성 목록(requirements.txt)",
+   "nodeIds": [
+    "document:README.md",
+    "document:server-collect_data/requirements.txt",
+    "document:server-frontend/requirements.txt",
+    "document:server-query/requirements.txt"
+   ]
+  }
+ ],
+ "tour": [
+  {
+   "order": 1,
+   "title": "프로젝트 개요와 서비스 구성",
+   "description": "README.md는 이 프로젝트의 흐름을 '수집 → 저장 → 백테스트 → 시각화' 네 단계로 소개하고, 백테스트 규칙과 알려진 문제(진입 중복, MDD 계산, NaN 표준편차로 인한 500 에러, SQL 문자열 보간)까지 정리합니다. docker-compose.yml은 이 흐름을 collect_data·db(postgres:15)·query(FastAPI, 8082)·frontend(Streamlit, 8501) 4개 컨테이너로 구현하며, trading_net 네트워크와 pgdata 볼륨으로 묶습니다. 이후 모든 단계는 이 4개 서비스 중 하나를 따라가는 여정입니다.",
+   "nodeIds": [
+    "document:README.md",
+    "service:docker-compose.yml",
+    "service:docker-compose.yml:db",
+    "service:docker-compose.yml:frontend"
+   ],
+   "languageLesson": "docker-compose의 depends_on은 시작 순서만 보장하고 DB가 '준비 완료'인지는 보장하지 않습니다. 컨테이너끼리는 서비스 이름이 DNS가 되므로 frontend는 API_URL=http://query:8082 처럼 서비스 이름으로 query를 호출합니다."
+  },
+  {
+   "order": 2,
+   "title": "공유 계층: DB 연결과 상수",
+   "description": "세 서버가 공통으로 import하는 shared 패키지입니다. connect_db.py는 .env의 POSTGRES_* 값으로 모듈 전역 SQLAlchemy engine을 만들고, symbols_intervals.py는 지원 심볼(BTC·ETH·XRP·SOL)과 캔들 간격(15m·1h·4h·1d)을 정의합니다. fan-in이 가장 높은 파일들로, 이후 수집·조회·프런트엔드가 모두 같은 DB와 같은 `{symbol}_{interval}` 테이블 이름 규칙을 쓰게 만드는 기반입니다.",
+   "nodeIds": [
+    "file:shared/connect_db.py",
+    "file:shared/symbols_intervals.py"
+   ],
+   "languageLesson": "Python 모듈은 처음 import될 때 한 번만 실행되므로, 모듈 최상단에 만든 engine은 사실상 프로세스 전역 싱글턴처럼 동작합니다. SQLAlchemy engine은 내부에 커넥션 풀을 갖고 있어 요청마다 새로 만들 필요가 없습니다."
+  },
+  {
+   "order": 3,
+   "title": "데이터 수집: Binance → PostgreSQL",
+   "description": "main_fetch.py의 main_loop는 60초 주기로 SYMBOLS×INTERVALS를 순회하며 save_to_db를 호출합니다. binance_client.py는 Binance klines API에서 캔들을 받아 DataFrame으로 만들고, DB의 마지막 timestamp를 조회해 증분 수집 시작점을 계산합니다. fetch_ohlcv.py는 심볼·간격별 테이블을 동적으로 생성하고 기존 데이터와 병합한 뒤 지표를 계산해 신규 행만 적재합니다.",
+   "nodeIds": [
+    "file:server-collect_data/fetcher/main_fetch.py",
+    "file:server-collect_data/fetcher/binance_client.py",
+    "file:server-collect_data/fetcher/fetch_ohlcv.py",
+    "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db"
+   ]
+  },
+  {
+   "order": 4,
+   "title": "보조지표 계산 모듈",
+   "description": "save_to_db가 저장 직전에 호출하는 calculate_indicators는 종가·거래량으로 EMA(7/25/99)·RSI·MACD·볼린저 밴드·거래량 이동평균 컬럼을 한 번에 추가합니다. 각 지표는 ema.py, rsi.py(Wilder RMA 평활), macd.py, boll.py처럼 작은 모듈로 분리되어 있습니다. 이렇게 미리 계산해 테이블 컬럼으로 저장해 두었기 때문에, 이후 백테스트에서 사용자가 'rsi < 30' 같은 조건을 SQL WHERE절로 바로 쓸 수 있습니다.",
+   "nodeIds": [
+    "file:server-collect_data/indicators/calculate.py",
+    "file:server-collect_data/indicators/rsi.py",
+    "file:server-collect_data/indicators/macd.py",
+    "file:server-collect_data/indicators/boll.py",
+    "file:server-collect_data/indicators/ema.py"
+   ],
+   "languageLesson": "pandas의 ewm(span=n).mean()은 지수이동평균을, rolling(n).mean()/std(ddof=0)는 단순이동평균·모표준편차를 계산합니다. 벡터 연산이라 for 루프 없이 전체 시리즈에 한 번에 적용됩니다."
+  },
+  {
+   "order": 5,
+   "title": "프런트엔드: 전략 조건 입력",
+   "description": "이제 사용자 요청 하나를 끝까지 따라갑니다. Main.py는 Streamlit 멀티페이지 앱의 진입 페이지이고, pages/backtest.py에서 사용자가 코인·간격·기간과 '지표/연산자/값' 조건 행을 입력하면 이를 'and'로 이어 strategy_sql 문자열을 만듭니다. 이 문자열은 secrets.toml에 지정된 API_URL(http://query:8082)의 /save_strategy로 POST됩니다.",
+   "nodeIds": [
+    "file:server-frontend/Main.py",
+    "file:server-frontend/pages/backtest.py",
+    "config:server-frontend/.streamlit/secrets.toml"
+   ],
+   "languageLesson": "Streamlit은 위젯을 조작할 때마다 스크립트 전체를 위에서부터 다시 실행합니다. 그래서 동적으로 추가한 조건 행처럼 재실행 사이에 유지해야 하는 값은 st.session_state에 저장해야 사라지지 않습니다."
+  },
+  {
+   "order": 6,
+   "title": "FastAPI 진입점과 /save_strategy",
+   "description": "main_query.py는 11개 엔드포인트를 노출하는 조회·백테스트 서버이며, BFS 분석에서도 가장 많은 의존성을 가진 중심 노드입니다. POST /save_strategy는 요청 본문을 StrategyRequest(symbol, interval, strategy_sql, risk_reward_ratio, 선택적 start/end_time)로 검증한 뒤 백테스트를 실행하고 결과를 저장합니다. 단, 타입 검증은 하지만 strategy_sql의 내용은 검증 없이 SQL로 흘러간다는 점을 기억해 두세요.",
+   "nodeIds": [
+    "file:server-query/main_query.py",
+    "class:server-query/main_query.py:StrategyRequest",
+    "endpoint:server-query/main_query.py:POST /save_strategy",
+    "function:server-query/main_query.py:save_strategy"
+   ],
+   "languageLesson": "FastAPI에서 핸들러 인자를 Pydantic BaseModel 타입으로 선언하면 JSON 본문이 자동으로 파싱·타입 검증되고, 실패 시 422 응답이 자동 반환됩니다. Optional 필드는 기본값 None으로 선언합니다."
+  },
+  {
+   "order": 7,
+   "title": "LATERAL JOIN 백테스트 엔진",
+   "description": "run_conditional_lateral_backtest는 `{symbol}_{interval}` 테이블에서 strategy_sql 조건과 close > low*1.005를 만족하는 캔들을 진입으로 잡고, SL=진입 캔들 low, TP=close+(close−low)·rr로 설정합니다. LEFT JOIN LATERAL로 이후 처음 low<=SL 또는 high>=TP가 되는 캔들을 청산으로 찾고(SL 우선, 없으면 OPEN), save_result_to_table은 매번 `filtered` 테이블을 비우고 최신 결과만 저장합니다. 알려진 문제로 strategy_sql·기간 값의 문자열 보간(SQL injection), 진입 중복, ORDER BY 없는 cumprod가 있습니다.",
+   "nodeIds": [
+    "file:server-query/filtered_func.py",
+    "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+    "function:server-query/filtered_func.py:save_result_to_table"
+   ],
+   "languageLesson": "PostgreSQL의 LEFT JOIN LATERAL은 오른쪽 서브쿼리가 왼쪽 행의 컬럼(진입 시각, SL, TP)을 참조할 수 있게 해 '행마다 실행되는 서브쿼리'를 만듭니다. 또한 SQLAlchemy text(\"... WHERE ts >= :start\")에 params로 값을 넘기면 드라이버가 안전하게 바인딩하지만, f-string으로 끼워 넣으면 입력이 그대로 SQL이 되어 injection에 노출됩니다(단, 조건식 자체는 바인딩할 수 없으므로 화이트리스트 검증이 필요)."
+  },
+  {
+   "order": 8,
+   "title": "통계 계산과 결과 조회 API",
+   "description": "calculate_statics는 `filtered` 테이블을 읽어 TP/SL 건수·승률·기대값·MDD·최종 누적수익률을 계산하고, GET /filtered-tp-sl-rate가 이를 그대로 반환합니다. GET /filtered-profit-rate는 수익률 그래프용 데이터를, get_data.py의 헬퍼들은 테이블 조회와 inf/NaN 정리를 담당합니다. 알려진 문제로 MDD를 비율이 아닌 %p 하락으로 계산하고, TP/SL 행이 1개면 std가 NaN이 되어 JSON 직렬화 실패(500)가 발생합니다.",
+   "nodeIds": [
+    "function:server-query/filtered_func.py:calculate_statics",
+    "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+    "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+    "file:server-query/get_data.py"
+   ],
+   "languageLesson": "누적수익률은 pandas에서 (1 + r).cumprod() - 1로 구하며, 행 순서에 의존하므로 반드시 시간순 정렬 후 계산해야 합니다. 또한 NaN은 truthy라서 `nan or 0.0`은 여전히 NaN이므로 pd.isna()나 math.isnan()으로 명시적으로 처리해야 합니다."
+  },
+  {
+   "order": 9,
+   "title": "결과 시각화 페이지",
+   "description": "요청의 마지막 단계로 프런트엔드가 결과를 보여 줍니다. profit_chart.py는 /filtered-time-range·/filtered-profit-rate·/filtered-tp-sl-rate를 호출해 누적 수익률 차트와 익절/손절 통계를 그리고, chart.py는 /filtered-ohlcv·/indicator-data 등으로 선택한 전략의 진입~청산 구간 캔들과 사용된 지표를 Plotly로 시각화합니다. Step 4에서 저장한 지표 컬럼이 여기서 다시 차트로 돌아옵니다.",
+   "nodeIds": [
+    "file:server-frontend/pages/profit_chart.py",
+    "file:server-frontend/pages/chart.py",
+    "endpoint:server-query/main_query.py:GET /indicator-data"
+   ]
+  },
+  {
+   "order": 10,
+   "title": "테스트와 CI/CD 배포",
+   "description": "init_db.py는 SYMBOLS×INTERVALS 조합의 OHLCV 테이블을 만들고 샘플 캔들을 채우며, test_query.py는 이를 autouse fixture로 실행한 뒤 TestClient로 조회 엔드포인트와 잘못된 strategy_sql의 500 응답을 검증합니다. workflow.yml은 main push 시 Postgres 15 서비스 컨테이너로 이 테스트를 돌리고, 통과하면 세 이미지를 멀티아키텍처로 Docker Hub에 푸시한 다음 SSH로 EC2에서 docker-compose를 갱신·실행합니다. 각 서비스의 Dockerfile은 python:3.11-slim 기반으로 shared 모듈을 함께 복사합니다.",
+   "nodeIds": [
+    "file:server-query/init_db.py",
+    "file:server-query/test_query.py",
+    "pipeline:.github/workflows/workflow.yml",
+    "service:server-query/Dockerfile"
+   ],
+   "languageLesson": "GitHub Actions의 jobs는 기본적으로 병렬 실행되므로 needs: [test]처럼 의존성을 선언해 test → push → deploy 순서를 강제합니다. services: 블록으로 띄운 Postgres 컨테이너는 job 동안만 살아 있는 일회용 테스트 DB입니다."
+  }
+ ]
+}

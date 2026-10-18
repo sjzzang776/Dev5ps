@@ -1,0 +1,1304 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "028e0878ea90330caa39901ff3624f1d38c494f9",
+  "generatedAt": "2026-10-18T07:22:19.749Z",
+  "files": {
+    ".github/workflows/workflow.yml": {
+      "filePath": ".github/workflows/workflow.yml",
+      "contentHash": "842f14c4b6dc8fd2a07ad5dcccb5b88afcf11d118bf806c5a8b7a9a56595f379",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 154,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "790df10349e87895cda238d6c6939c430b2ef6d9e91e3f588773750726a85f0c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "docker-compose.yml": {
+      "filePath": "docker-compose.yml",
+      "contentHash": "73c704cae0c3adc0ca57e716e03eafc544c70ae634a825bef533da7cf2388b1e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 85,
+      "hasStructuralAnalysis": false
+    },
+    "server-collect_data/.dockerignore": {
+      "filePath": "server-collect_data/.dockerignore",
+      "contentHash": "7df69b0a8df4de51aa5750f952790b19a5c95b400a7ed5a2b03553467bebff52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "server-collect_data/Dockerfile": {
+      "filePath": "server-collect_data/Dockerfile",
+      "contentHash": "4477436787511fa003ba222560c3a5206bdefa1f986452dc9177af8ad9427894",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "server-collect_data/fetcher/__init__.py": {
+      "filePath": "server-collect_data/fetcher/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/fetcher/binance_client.py": {
+      "filePath": "server-collect_data/fetcher/binance_client.py",
+      "contentHash": "8c3d7c60fb892152b48fd784a7299f7a1477b749d7fbe0e9a62276bf6378b6c3",
+      "functions": [
+        {
+          "name": "get_binance_start_time",
+          "params": [
+            "symbol",
+            "interval",
+            "limit",
+            "start_time"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "get_latest_timestamp",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "fetch_from_binance",
+          "params": [
+            "symbol",
+            "interval",
+            "limit",
+            "start_time"
+          ],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "text"
+          ]
+        },
+        {
+          "source": "shared.connect_db",
+          "specifiers": [
+            "engine"
+          ]
+        }
+      ],
+      "exports": [
+        "get_binance_start_time",
+        "get_latest_timestamp",
+        "fetch_from_binance"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/fetcher/fetch_ohlcv.py": {
+      "filePath": "server-collect_data/fetcher/fetch_ohlcv.py",
+      "contentHash": "82dc50f5af75735bfb0d429e9a22c54679642cb3fb80b0b35bfb4437131c2d5e",
+      "functions": [
+        {
+          "name": "to_kst",
+          "params": [
+            "dt"
+          ],
+          "returnType": "datetime",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "table_exists",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "create_dynamic_table",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "save_to_db",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "text"
+          ]
+        },
+        {
+          "source": "fetcher.binance_client",
+          "specifiers": [
+            "fetch_from_binance",
+            "get_latest_timestamp",
+            "get_binance_start_time"
+          ]
+        },
+        {
+          "source": "shared.connect_db",
+          "specifiers": [
+            "engine"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "indicators.calculate",
+          "specifiers": [
+            "calculate_indicators"
+          ]
+        }
+      ],
+      "exports": [
+        "to_kst",
+        "table_exists",
+        "create_dynamic_table",
+        "save_to_db"
+      ],
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/fetcher/main_fetch.py": {
+      "filePath": "server-collect_data/fetcher/main_fetch.py",
+      "contentHash": "23fc516776c353a860ccd6a3a9504d73f9dd892b8a2bc75cad345dc1c63f8fd8",
+      "functions": [
+        {
+          "name": "main_loop",
+          "params": [
+            "interval_seconds"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "shared.symbols_intervals",
+          "specifiers": [
+            "SYMBOLS",
+            "INTERVALS"
+          ]
+        },
+        {
+          "source": "fetcher.fetch_ohlcv",
+          "specifiers": [
+            "save_to_db"
+          ]
+        }
+      ],
+      "exports": [
+        "main_loop"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/__init__.py": {
+      "filePath": "server-collect_data/indicators/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/boll.py": {
+      "filePath": "server-collect_data/indicators/boll.py",
+      "contentHash": "cd35d7191883761cda92e08fdf310f42506b29ea5c3e0952b33c14f5295003df",
+      "functions": [
+        {
+          "name": "calculate_bollinger",
+          "params": [
+            "series",
+            "window",
+            "num_std"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "calculate_bollinger"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/calculate.py": {
+      "filePath": "server-collect_data/indicators/calculate.py",
+      "contentHash": "ae7373820ce89c891ddbb4cfa7a7080375c6653742de196208c0137344e61433",
+      "functions": [
+        {
+          "name": "calculate_indicators",
+          "params": [
+            "df"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": ".rsi",
+          "specifiers": [
+            "calculate_rsi_and_sma_rsi"
+          ]
+        },
+        {
+          "source": ".macd",
+          "specifiers": [
+            "calculate_macd"
+          ]
+        },
+        {
+          "source": ".ema",
+          "specifiers": [
+            "calculate_ema"
+          ]
+        },
+        {
+          "source": ".boll",
+          "specifiers": [
+            "calculate_bollinger"
+          ]
+        },
+        {
+          "source": ".volume_ma",
+          "specifiers": [
+            "calculate_volume_ma"
+          ]
+        }
+      ],
+      "exports": [
+        "calculate_indicators"
+      ],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/ema.py": {
+      "filePath": "server-collect_data/indicators/ema.py",
+      "contentHash": "76f619015ec589973a1af3e934cea55a93e4660323761bf82b211deac6089092",
+      "functions": [
+        {
+          "name": "calculate_ema",
+          "params": [
+            "series",
+            "span"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "calculate_ema"
+      ],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/macd.py": {
+      "filePath": "server-collect_data/indicators/macd.py",
+      "contentHash": "db6901ab5dfb0e52693027626b25c5ac83dc81cd254901432f5c5da4d0df2308",
+      "functions": [
+        {
+          "name": "calculate_macd",
+          "params": [
+            "series"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "calculate_macd"
+      ],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/rsi.py": {
+      "filePath": "server-collect_data/indicators/rsi.py",
+      "contentHash": "9c156086594bb6edaa802088aa2bb0e567d14e4cdae24ca0c5c743aa28a556fc",
+      "functions": [
+        {
+          "name": "rma",
+          "params": [
+            "series",
+            "period"
+          ],
+          "returnType": "pd.Series",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "calculate_rsi_and_sma_rsi",
+          "params": [
+            "close",
+            "rsi_period",
+            "smoothing_period"
+          ],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "rma",
+        "calculate_rsi_and_sma_rsi"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/indicators/volume_ma.py": {
+      "filePath": "server-collect_data/indicators/volume_ma.py",
+      "contentHash": "7bd25b85d100a5d876cd164aaa04baaa142b792fa0b226ebb1acd40746c62bec",
+      "functions": [
+        {
+          "name": "calculate_volume_ma",
+          "params": [
+            "series",
+            "span"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "calculate_volume_ma"
+      ],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "server-collect_data/requirements.txt": {
+      "filePath": "server-collect_data/requirements.txt",
+      "contentHash": "fc125cf067bf7b792ca86b22ce3ab95938fb0a435af34518388ef2bad5fad410",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "server-frontend/.dockerignore": {
+      "filePath": "server-frontend/.dockerignore",
+      "contentHash": "7df69b0a8df4de51aa5750f952790b19a5c95b400a7ed5a2b03553467bebff52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "server-frontend/.streamlit/secrets.toml": {
+      "filePath": "server-frontend/.streamlit/secrets.toml",
+      "contentHash": "3bf6316c973a9345c0de4d6c07861c09c1e18e537c0952ac5a158e59954ee6ff",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "server-frontend/Dockerfile": {
+      "filePath": "server-frontend/Dockerfile",
+      "contentHash": "e598d7d6829fc72aa3610c9236e56efcdbdcc3ca91a4123a2c958c21e4ef8d82",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "server-frontend/Main.py": {
+      "filePath": "server-frontend/Main.py",
+      "contentHash": "539cce957f2b79da0f259115b216312148fbf23537bffd03d8f0601ab17cb631",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "streamlit",
+          "specifiers": [
+            "st"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "server-frontend/pages/backtest.py": {
+      "filePath": "server-frontend/pages/backtest.py",
+      "contentHash": "1f1414d3180d1aa297061aa31b20eaf32f7e41f0cc096b701888e563faf7e4fc",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "streamlit",
+          "specifiers": [
+            "st"
+          ]
+        },
+        {
+          "source": "shared.symbols_intervals",
+          "specifiers": [
+            "SYMBOLS",
+            "INTERVALS"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 190,
+      "hasStructuralAnalysis": true
+    },
+    "server-frontend/pages/chart.py": {
+      "filePath": "server-frontend/pages/chart.py",
+      "contentHash": "2befea10f8c82c93dea57a7d25afdfc5e111f811cbce4b39f6146dba55ced2c3",
+      "functions": [
+        {
+          "name": "expand",
+          "params": [
+            "ind"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "streamlit",
+          "specifiers": [
+            "st"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "base64",
+          "specifiers": [
+            "base64"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        }
+      ],
+      "exports": [
+        "expand"
+      ],
+      "totalLines": 244,
+      "hasStructuralAnalysis": true
+    },
+    "server-frontend/pages/profit_chart.py": {
+      "filePath": "server-frontend/pages/profit_chart.py",
+      "contentHash": "2ad8f50d9d606d7d22f7e8b64de213c1c953694ec4f0c49dfdf2dc3d4711b371",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "streamlit",
+          "specifiers": [
+            "st"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "altair",
+          "specifiers": [
+            "alt"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 113,
+      "hasStructuralAnalysis": true
+    },
+    "server-frontend/requirements.txt": {
+      "filePath": "server-frontend/requirements.txt",
+      "contentHash": "a6dc084813338c29df84eaea2f528090eec0df9eb3d5c0dcf46f9ee7eb26807b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": false
+    },
+    "server-query/.dockerignore": {
+      "filePath": "server-query/.dockerignore",
+      "contentHash": "7df69b0a8df4de51aa5750f952790b19a5c95b400a7ed5a2b03553467bebff52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "server-query/Dockerfile": {
+      "filePath": "server-query/Dockerfile",
+      "contentHash": "c578c9af5e33880b92ca5c0e2adbc9c4a5ad5b47d405b04bbe88df5557a0fac6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "server-query/filtered_func.py": {
+      "filePath": "server-query/filtered_func.py",
+      "contentHash": "762ee78f7dd931a3295096a7e7f1c2a5e3542789ebdba27c09c21ecbb5cd19a9",
+      "functions": [
+        {
+          "name": "run_conditional_lateral_backtest",
+          "params": [
+            "symbol",
+            "interval",
+            "strategy_sql",
+            "risk_reward_ratio",
+            "start_time",
+            "end_time"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 99
+        },
+        {
+          "name": "save_result_to_table",
+          "params": [
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "calculate_statics",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 87
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "text"
+          ]
+        },
+        {
+          "source": "shared.connect_db",
+          "specifiers": [
+            "engine"
+          ]
+        }
+      ],
+      "exports": [
+        "run_conditional_lateral_backtest",
+        "save_result_to_table",
+        "calculate_statics"
+      ],
+      "totalLines": 227,
+      "hasStructuralAnalysis": true
+    },
+    "server-query/get_data.py": {
+      "filePath": "server-query/get_data.py",
+      "contentHash": "00163a6eb572a2b3ad5449acbd44f166ba301fa180bf1559c42ec8f9ab96a074",
+      "functions": [
+        {
+          "name": "wrap_strs_with_quote",
+          "params": [
+            "x"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "get_data_from_table",
+          "params": [
+            "table_name",
+            "return_type",
+            "order_by",
+            "filter",
+            "min_value",
+            "max_value"
+          ],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "get_ohlcv_data",
+          "params": [
+            "symbol",
+            "interval",
+            "filter",
+            "min_value",
+            "max_value"
+          ],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "get_filtered_data",
+          "params": [],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "text"
+          ]
+        },
+        {
+          "source": "shared.connect_db",
+          "specifiers": [
+            "engine"
+          ]
+        }
+      ],
+      "exports": [
+        "wrap_strs_with_quote",
+        "get_data_from_table",
+        "get_ohlcv_data",
+        "get_filtered_data"
+      ],
+      "totalLines": 125,
+      "hasStructuralAnalysis": true
+    },
+    "server-query/init_db.py": {
+      "filePath": "server-query/init_db.py",
+      "contentHash": "43e818fa135cd5e7373c1a4a329da958ecd350cfec1c7bb6c57929f3699af883",
+      "functions": [
+        {
+          "name": "create_table",
+          "params": [
+            "table_name"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "generate_ohlcv",
+          "params": [
+            "start_time",
+            "count",
+            "open_base"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "psycopg2",
+          "specifiers": [
+            "psycopg2"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timedelta"
+          ]
+        }
+      ],
+      "exports": [
+        "create_table",
+        "generate_ohlcv"
+      ],
+      "totalLines": 98,
+      "hasStructuralAnalysis": true
+    },
+    "server-query/main_query.py": {
+      "filePath": "server-query/main_query.py",
+      "contentHash": "1b84c4ae711b6ad528a6aecdadac7ba33b5b926a4a785b7ad17a3e90ffaaacc5",
+      "functions": [
+        {
+          "name": "read_filtered_ohlcv",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "get_candle_data",
+          "params": [
+            "entry_time",
+            "exit_time",
+            "symbol",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "read_ohlcv",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "save_strategy",
+          "params": [
+            "req"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "get_filtered_profit_rate",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "get_filtered_tp_sl_rate",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "get_time_range",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "get_filtered_entry_time_range",
+          "params": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "get_distinct_indicators",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "get_indicator_data",
+          "params": [
+            "symbol",
+            "interval",
+            "indicator",
+            "entry_time",
+            "exit_time"
+          ],
+          "exported": true,
+          "lineCount": 60
+        },
+        {
+          "name": "get_indicators_in_range",
+          "params": [
+            "entry_time",
+            "exit_time"
+          ],
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [
+        {
+          "name": "StrategyRequest",
+          "methods": [],
+          "properties": [
+            "symbol",
+            "interval",
+            "strategy_sql",
+            "risk_reward_ratio",
+            "start_time",
+            "end_time"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "source": "fastapi.middleware.cors",
+          "specifiers": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "source": "fastapi.encoders",
+          "specifiers": [
+            "jsonable_encoder"
+          ]
+        },
+        {
+          "source": "get_data",
+          "specifiers": [
+            "get_ohlcv_data",
+            "get_filtered_data",
+            "get_data_from_table"
+          ]
+        },
+        {
+          "source": "shared.symbols_intervals",
+          "specifiers": [
+            "SYMBOLS",
+            "INTERVALS"
+          ]
+        },
+        {
+          "source": "filtered_func",
+          "specifiers": [
+            "run_conditional_lateral_backtest",
+            "save_result_to_table",
+            "calculate_statics"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "JSONResponse"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "dt"
+          ]
+        },
+        {
+          "source": "shared.connect_db",
+          "specifiers": [
+            "engine"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "text",
+            "select",
+            "distinct"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        }
+      ],
+      "exports": [
+        "read_filtered_ohlcv",
+        "get_candle_data",
+        "read_ohlcv",
+        "StrategyRequest",
+        "save_strategy",
+        "get_filtered_profit_rate",
+        "get_filtered_tp_sl_rate",
+        "get_time_range",
+        "get_filtered_entry_time_range",
+        "get_distinct_indicators",
+        "get_indicator_data",
+        "get_indicators_in_range"
+      ],
+      "totalLines": 298,
+      "hasStructuralAnalysis": true
+    },
+    "server-query/requirements.txt": {
+      "filePath": "server-query/requirements.txt",
+      "contentHash": "ab3c6a102f157608f063f29dc124bd2130c8a6dc3c83943cae613c757e02341d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "server-query/test_query.py": {
+      "filePath": "server-query/test_query.py",
+      "contentHash": "224e2b5e2139b93142b313fc388397a79f7fb006d64b5f6f2eb922c9d2c07e17",
+      "functions": [
+        {
+          "name": "setup_database",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "client",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_read_ohlcv",
+          "params": [
+            "client",
+            "sym",
+            "intv"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_candle_data",
+          "params": [
+            "client",
+            "sym",
+            "intv"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_candle_data_invalid",
+          "params": [
+            "client",
+            "sym",
+            "intv",
+            "exit_time",
+            "error_desc"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_strategy_invalid",
+          "params": [
+            "client",
+            "sym",
+            "intv",
+            "strategy"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "fastapi.testclient",
+          "specifiers": [
+            "TestClient"
+          ]
+        },
+        {
+          "source": "shared.symbols_intervals",
+          "specifiers": [
+            "SYMBOLS",
+            "INTERVALS"
+          ]
+        },
+        {
+          "source": "main_query",
+          "specifiers": [
+            "app"
+          ]
+        }
+      ],
+      "exports": [
+        "setup_database",
+        "client",
+        "test_read_ohlcv",
+        "test_candle_data",
+        "test_candle_data_invalid",
+        "test_strategy_invalid"
+      ],
+      "totalLines": 127,
+      "hasStructuralAnalysis": true
+    },
+    "shared/__init__.py": {
+      "filePath": "shared/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "shared/connect_db.py": {
+      "filePath": "shared/connect_db.py",
+      "contentHash": "bb05c5a30592fca7f943b4e9399f2ae8fb205bc0969e52568b229db101b8ac7c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "create_engine"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "shared/symbols_intervals.py": {
+      "filePath": "shared/symbols_intervals.py",
+      "contentHash": "9a24d815b0024dfc3db0bde66615937ba70c567e7567c53f6fd4c5e53383c8c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

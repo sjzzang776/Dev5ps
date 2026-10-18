@@ -1,0 +1,312 @@
+{
+ "name": "Dev5ps",
+ "description": "오픈소스를 이용한 SW 개발 실습 프로젝트로, Binance OHLCV 데이터를 수집해 기술 지표(RSI, MACD, Bollinger 등)를 계산하고 PostgreSQL에 저장한 뒤 FastAPI 조회 서버와 Streamlit 대시보드(차트·백테스트)로 제공합니다. Docker Compose로 서비스를 구성하고 GitHub Actions로 테스트·이미지 빌드·SSH 배포를 자동화합니다.",
+ "languages": [
+  "dockerfile",
+  "json",
+  "markdown",
+  "python",
+  "toml",
+  "yaml"
+ ],
+ "frameworks": [
+  "FastAPI",
+  "Streamlit",
+  "SQLAlchemy",
+  "Uvicorn",
+  "pytest",
+  "pandas",
+  "Plotly",
+  "Docker",
+  "Docker Compose",
+  "GitHub Actions"
+ ],
+ "files": [
+  {
+   "path": ".github/workflows/workflow.yml",
+   "language": "yaml",
+   "sizeLines": 153,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "README.md",
+   "language": "markdown",
+   "sizeLines": 20,
+   "fileCategory": "docs"
+  },
+  {
+   "path": "docker-compose.yml",
+   "language": "yaml",
+   "sizeLines": 84,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-collect_data/.dockerignore",
+   "language": "unknown",
+   "sizeLines": 0,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-collect_data/Dockerfile",
+   "language": "dockerfile",
+   "sizeLines": 12,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-collect_data/fetcher/__init__.py",
+   "language": "python",
+   "sizeLines": 0,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/fetcher/binance_client.py",
+   "language": "python",
+   "sizeLines": 58,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/fetcher/fetch_ohlcv.py",
+   "language": "python",
+   "sizeLines": 115,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/fetcher/main_fetch.py",
+   "language": "python",
+   "sizeLines": 27,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/__init__.py",
+   "language": "python",
+   "sizeLines": 0,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/boll.py",
+   "language": "python",
+   "sizeLines": 9,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/calculate.py",
+   "language": "python",
+   "sizeLines": 19,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/ema.py",
+   "language": "python",
+   "sizeLines": 1,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/macd.py",
+   "language": "python",
+   "sizeLines": 6,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/rsi.py",
+   "language": "python",
+   "sizeLines": 35,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/indicators/volume_ma.py",
+   "language": "python",
+   "sizeLines": 1,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-collect_data/requirements.txt",
+   "language": "txt",
+   "sizeLines": 4,
+   "fileCategory": "docs"
+  },
+  {
+   "path": "server-frontend/.dockerignore",
+   "language": "unknown",
+   "sizeLines": 0,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-frontend/.streamlit/secrets.toml",
+   "language": "toml",
+   "sizeLines": 0,
+   "fileCategory": "config"
+  },
+  {
+   "path": "server-frontend/Dockerfile",
+   "language": "dockerfile",
+   "sizeLines": 13,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-frontend/Main.py",
+   "language": "python",
+   "sizeLines": 6,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-frontend/pages/backtest.py",
+   "language": "python",
+   "sizeLines": 189,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-frontend/pages/chart.py",
+   "language": "python",
+   "sizeLines": 243,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-frontend/pages/profit_chart.py",
+   "language": "python",
+   "sizeLines": 112,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-frontend/requirements.txt",
+   "language": "txt",
+   "sizeLines": 5,
+   "fileCategory": "docs"
+  },
+  {
+   "path": "server-query/.dockerignore",
+   "language": "unknown",
+   "sizeLines": 0,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-query/Dockerfile",
+   "language": "dockerfile",
+   "sizeLines": 12,
+   "fileCategory": "infra"
+  },
+  {
+   "path": "server-query/filtered_func.py",
+   "language": "python",
+   "sizeLines": 226,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-query/get_data.py",
+   "language": "python",
+   "sizeLines": 124,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-query/init_db.py",
+   "language": "python",
+   "sizeLines": 97,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-query/main_query.py",
+   "language": "python",
+   "sizeLines": 297,
+   "fileCategory": "code"
+  },
+  {
+   "path": "server-query/requirements.txt",
+   "language": "txt",
+   "sizeLines": 7,
+   "fileCategory": "docs"
+  },
+  {
+   "path": "server-query/test_query.py",
+   "language": "python",
+   "sizeLines": 126,
+   "fileCategory": "code"
+  },
+  {
+   "path": "shared/__init__.py",
+   "language": "python",
+   "sizeLines": 0,
+   "fileCategory": "code"
+  },
+  {
+   "path": "shared/connect_db.py",
+   "language": "python",
+   "sizeLines": 15,
+   "fileCategory": "code"
+  },
+  {
+   "path": "shared/symbols_intervals.py",
+   "language": "python",
+   "sizeLines": 3,
+   "fileCategory": "code"
+  }
+ ],
+ "totalFiles": 36,
+ "filteredByIgnore": 0,
+ "estimatedComplexity": "moderate",
+ "importMap": {
+  ".github/workflows/workflow.yml": [],
+  "README.md": [],
+  "docker-compose.yml": [],
+  "server-collect_data/.dockerignore": [],
+  "server-collect_data/Dockerfile": [],
+  "server-collect_data/fetcher/__init__.py": [],
+  "server-collect_data/fetcher/binance_client.py": [
+   "shared/connect_db.py"
+  ],
+  "server-collect_data/fetcher/fetch_ohlcv.py": [
+   "server-collect_data/fetcher/binance_client.py",
+   "server-collect_data/indicators/calculate.py",
+   "shared/connect_db.py"
+  ],
+  "server-collect_data/fetcher/main_fetch.py": [
+   "server-collect_data/fetcher/fetch_ohlcv.py",
+   "shared/symbols_intervals.py"
+  ],
+  "server-collect_data/indicators/__init__.py": [],
+  "server-collect_data/indicators/boll.py": [],
+  "server-collect_data/indicators/calculate.py": [
+   "server-collect_data/indicators/boll.py",
+   "server-collect_data/indicators/ema.py",
+   "server-collect_data/indicators/macd.py",
+   "server-collect_data/indicators/rsi.py",
+   "server-collect_data/indicators/volume_ma.py"
+  ],
+  "server-collect_data/indicators/ema.py": [],
+  "server-collect_data/indicators/macd.py": [],
+  "server-collect_data/indicators/rsi.py": [],
+  "server-collect_data/indicators/volume_ma.py": [],
+  "server-collect_data/requirements.txt": [],
+  "server-frontend/.dockerignore": [],
+  "server-frontend/.streamlit/secrets.toml": [],
+  "server-frontend/Dockerfile": [],
+  "server-frontend/Main.py": [],
+  "server-frontend/pages/backtest.py": [
+   "shared/symbols_intervals.py"
+  ],
+  "server-frontend/pages/chart.py": [],
+  "server-frontend/pages/profit_chart.py": [],
+  "server-frontend/requirements.txt": [],
+  "server-query/.dockerignore": [],
+  "server-query/Dockerfile": [],
+  "server-query/filtered_func.py": [
+   "shared/connect_db.py"
+  ],
+  "server-query/get_data.py": [
+   "shared/connect_db.py"
+  ],
+  "server-query/init_db.py": [],
+  "server-query/main_query.py": [
+   "server-query/filtered_func.py",
+   "server-query/get_data.py",
+   "shared/connect_db.py",
+   "shared/symbols_intervals.py"
+  ],
+  "server-query/requirements.txt": [],
+  "server-query/test_query.py": [
+   "server-query/main_query.py",
+   "shared/symbols_intervals.py"
+  ],
+  "shared/__init__.py": [],
+  "shared/connect_db.py": [],
+  "shared/symbols_intervals.py": []
+ }
+}

@@ -1,0 +1,787 @@
+{
+ "freshness": {
+  "graphCommit": "028e0878ea90330caa39901ff3624f1d38c494f9",
+  "head": "028e0878ea90330caa39901ff3624f1d38c494f9",
+  "workingTreeChanges": [
+   "server-query/filtered_func.py"
+  ]
+ },
+ "diff": {
+  "hunks": {
+   "server-query/filtered_func.py": [
+    [
+     187,
+     190
+    ],
+    [
+     192,
+     193
+    ]
+   ]
+  },
+  "risk": "중간",
+  "maxComplexity": 8,
+  "layersTouched": 1,
+  "changed": [
+   [
+    "function:server-query/filtered_func.py:calculate_statics",
+    "`filtered` 테이블 전체를 읽어 TP/SL 건수·승률·기대값·수익/손실 통계·MDD·최종 누적수익률을 dict로 반환한다. 알려진 문제(합성 데이터로 검증): MDD를 상대 낙폭이 아닌 cum_profit_rate의 최대 %p 하락 구간으로 고르고 초기 자본을 무시함(실제 −60% → 코드 −25% 예시), TP/SL 행이 1개면 std가 NaN이고 `NaN or 0.0`이 NaN으로 남아 JSON 직렬화 실패(500), ORDER BY 없는 `SELECT *`라 결과가 행 순서에 의존함."
+   ]
+  ],
+  "affected": [
+   [
+    "file:server-query/filtered_func.py",
+    "사용자 전략 SQL 조건으로 LEFT JOIN LATERAL 기반 백테스트를 실행하고, 결과를 `filtered` 테이블에 저장한 뒤 승률·기대값·MDD 등 통계를 계산하는 백테스트 핵심 모듈. strategy_sql과 기간 값을 SQL 문자열에 직접 삽입해 SQL injection 위험이 있고, MDD·NaN 처리 등 통계 계산에 알려진 문제가 있다."
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+    "GET /filtered-tp-sl-rate 핸들러: calculate_statics 결과(승률·기대값·MDD 등)를 반환하며, 통계 쪽 NaN 문제로 500이 날 수 있다."
+   ]
+  ]
+ },
+ "explain": {
+  "target": "file:server-query/filtered_func.py",
+  "summary": "사용자 전략 SQL 조건으로 LEFT JOIN LATERAL 기반 백테스트를 실행하고, 결과를 `filtered` 테이블에 저장한 뒤 승률·기대값·MDD 등 통계를 계산하는 백테스트 핵심 모듈. strategy_sql과 기간 값을 SQL 문자열에 직접 삽입해 SQL injection 위험이 있고, MDD·NaN 처리 등 통계 계산에 알려진 문제가 있다.",
+  "layer": "백테스트·조회 API 계층",
+  "contains": [
+   [
+    "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+    "`{symbol}_{interval}` 테이블에서 strategy_sql 조건과 close > low*1.005를 만족하는 모든 캔들을 진입으로 잡고, SL=진입 캔들 low, TP=close+(close−low)·rr로 두어 LATERAL JOIN으로 이후 첫 low<=SL 또는 high>=TP 캔들을 청산으로 찾는다(SL 우선 판정, 청산 없으면 OPEN). 알려진 문제: strategy_sql·start/end time을 SQL 텍스트에 직접 보간(injection 위험), 이전 포지션 보유 여부를 확인하지 않아 진입이 겹칠 수 있음, 바깥 쿼리에 ORDER BY가 없는데 cum_profit_rate를 행 순서대로 cumprod함."
+   ],
+   [
+    "function:server-query/filtered_func.py:save_result_to_table",
+    "백테스트 결과 DataFrame을 `filtered` 테이블에 저장한다. 테이블이 없으면 생성(entry_time PRIMARY KEY)하고 매 실행마다 기존 행을 DELETE로 비운 뒤 append하므로 항상 최신 1회 결과만 남는다."
+   ],
+   [
+    "function:server-query/filtered_func.py:calculate_statics",
+    "`filtered` 테이블 전체를 읽어 TP/SL 건수·승률·기대값·수익/손실 통계·MDD·최종 누적수익률을 dict로 반환한다. 알려진 문제(합성 데이터로 검증): MDD를 상대 낙폭이 아닌 cum_profit_rate의 최대 %p 하락 구간으로 고르고 초기 자본을 무시함(실제 −60% → 코드 −25% 예시), TP/SL 행이 1개면 std가 NaN이고 `NaN or 0.0`이 NaN으로 남아 JSON 직렬화 실패(500), ORDER BY 없는 `SELECT *`라 결과가 행 순서에 의존함."
+   ]
+  ],
+  "outgoing": [
+   [
+    "imports",
+    "file:shared/connect_db.py"
+   ]
+  ],
+  "incoming": [
+   [
+    "calls",
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate"
+   ],
+   [
+    "calls",
+    "function:server-query/main_query.py:save_strategy"
+   ],
+   [
+    "imports",
+    "file:server-query/main_query.py"
+   ]
+  ]
+ },
+ "chat": {
+  "query": "전략 실행 결과(수익률·통계)는 어디서 계산되고 어떤 화면에 표시되나?",
+  "keywords": [
+   "통계",
+   "statics",
+   "profit",
+   "수익률",
+   "filtered"
+  ],
+  "hits": [
+   [
+    "file:server-query/filtered_func.py",
+    "사용자 전략 SQL 조건으로 LEFT JOIN LATERAL 기반 백테스트를 실행하고, 결과를 `filtered` 테이블에 저장한 뒤 승률·기대값·MDD 등 통계를 계산하는 백테스트 핵심 모듈. strategy_sql과 기간 값을 SQL 문자열에 직접 삽입해 SQL injection 위험이 있고, MDD·NaN 처리 등 통계 계산에 알려진 문제가 있다."
+   ],
+   [
+    "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+    "`{symbol}_{interval}` 테이블에서 strategy_sql 조건과 close > low*1.005를 만족하는 모든 캔들을 진입으로 잡고, SL=진입 캔들 low, TP=close+(close−low)·rr로 두어 LATERAL JOIN으로 이후 첫 low<=SL 또는 high>=TP 캔들을 청산으로 찾는다(SL 우선 판정, 청산 없으면 OPEN). 알려진 문제: strategy_sql·start/end time을 SQL 텍스트에 직접 보간(injection 위험), 이전 포지션 보유 여부를 확인하지 않아 진입이 겹칠 수 있음, 바깥 쿼리에 ORDER BY가 없는데 cum_profit_rate를 행 순서대로 cumprod함."
+   ],
+   [
+    "function:server-query/filtered_func.py:save_result_to_table",
+    "백테스트 결과 DataFrame을 `filtered` 테이블에 저장한다. 테이블이 없으면 생성(entry_time PRIMARY KEY)하고 매 실행마다 기존 행을 DELETE로 비운 뒤 append하므로 항상 최신 1회 결과만 남는다."
+   ],
+   [
+    "function:server-query/filtered_func.py:calculate_statics",
+    "`filtered` 테이블 전체를 읽어 TP/SL 건수·승률·기대값·수익/손실 통계·MDD·최종 누적수익률을 dict로 반환한다. 알려진 문제(합성 데이터로 검증): MDD를 상대 낙폭이 아닌 cum_profit_rate의 최대 %p 하락 구간으로 고르고 초기 자본을 무시함(실제 −60% → 코드 −25% 예시), TP/SL 행이 1개면 std가 NaN이고 `NaN or 0.0`이 NaN으로 남아 JSON 직렬화 실패(500), ORDER BY 없는 `SELECT *`라 결과가 행 순서에 의존함."
+   ],
+   [
+    "file:server-query/get_data.py",
+    "PostgreSQL 테이블에서 지정 컬럼을 선택·범위 필터·정렬해 pandas로 읽고, inf/NaN 행 제거와 timestamptz 문자열 변환 후 dict 리스트로 반환하는 데이터 조회 헬퍼 모듈. OHLCV 테이블과 `filtered` 결과 테이블용 래퍼를 제공한다."
+   ],
+   [
+    "function:server-query/get_data.py:get_filtered_data",
+    "`filtered` 백테스트 결과 테이블에서 진입/청산 시각, 심볼, 인터벌, 진입가, SL, TP 컬럼을 조회하는 래퍼."
+   ],
+   [
+    "file:server-query/main_query.py",
+    "조회·백테스트 서버의 FastAPI 앱 진입점으로, CORS 전체 허용 설정과 함께 OHLCV 조회, 전략 저장·실행(POST /save_strategy), 수익률·TP/SL 통계, 시간 범위, 보조지표 목록·데이터 등 11개 엔드포인트를 노출한다. Streamlit 프론트엔드가 호출하는 백엔드 API다."
+   ],
+   [
+    "function:server-query/main_query.py:read_filtered_ohlcv",
+    "GET /filtered-ohlcv 핸들러: get_filtered_data로 백테스트 진입/청산 결과 목록을 반환한다."
+   ],
+   [
+    "function:server-query/main_query.py:get_candle_data",
+    "GET /filtered-candle-data 핸들러: 진입·청산 시각 형식과 순서, symbol/interval 화이트리스트를 검증한 뒤 해당 구간의 OHLCV 캔들을 반환한다."
+   ],
+   [
+    "function:server-query/main_query.py:save_strategy",
+    "POST /save_strategy 핸들러: StrategyRequest로 run_conditional_lateral_backtest를 실행하고 save_result_to_table로 `filtered`에 저장한 뒤 행 수와 최종 누적수익률을 반환한다. 요청의 strategy_sql이 검증 없이 SQL에 삽입되는 경로다."
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_profit_rate",
+    "GET /filtered-profit-rate 핸들러: 수익률 그래프용으로 `filtered`의 entry_time, profit_rate, cum_profit_rate를 반환한다."
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+    "GET /filtered-tp-sl-rate 핸들러: calculate_statics 결과(승률·기대값·MDD 등)를 반환하며, 통계 쪽 NaN 문제로 500이 날 수 있다."
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_entry_time_range",
+    "GET /filtered-time-range 핸들러: `filtered` 테이블 entry_time의 최소·최대값을 반환한다."
+   ],
+   [
+    "function:server-query/main_query.py:get_distinct_indicators",
+    "GET /what-indicators 핸들러: `filtered`의 what_indicators 문자열을 'and'로 분리해 사용된 보조지표 이름 집합을 정렬해 반환한다."
+   ],
+   [
+    "function:server-query/main_query.py:get_indicators_in_range",
+    "GET /filtered-indicators 핸들러: 지정 entry_time 구간의 `filtered` 행에서 사용된 보조지표를 모아 ' and '로 이은 문자열로 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+    "FastAPI 엔드포인트 `GET /filtered-ohlcv` (핸들러 read_filtered_ohlcv). get_filtered_data로 백테스트 진입/청산 결과 목록을 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+    "FastAPI 엔드포인트 `GET /filtered-candle-data` (핸들러 get_candle_data). 진입·청산 시각 형식과 순서, symbol/interval 화이트리스트를 검증한 뒤 해당 구간의 OHLCV 캔들을 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:POST /save_strategy",
+    "FastAPI 엔드포인트 `POST /save_strategy` (핸들러 save_strategy). StrategyRequest로 run_conditional_lateral_backtest를 실행하고 save_result_to_table로 `filtered`에 저장한 뒤 행 수와 최종 누적수익률을 반환한다. 요청의 strategy_sql이 검증 없이 SQL에 삽입되는 경로다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+    "FastAPI 엔드포인트 `GET /filtered-profit-rate` (핸들러 get_filtered_profit_rate). 수익률 그래프용으로 `filtered`의 entry_time, profit_rate, cum_profit_rate를 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+    "FastAPI 엔드포인트 `GET /filtered-tp-sl-rate` (핸들러 get_filtered_tp_sl_rate). calculate_statics 결과(승률·기대값·MDD 등)를 반환하며, 통계 쪽 NaN 문제로 500이 날 수 있다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-time-range",
+    "FastAPI 엔드포인트 `GET /filtered-time-range` (핸들러 get_filtered_entry_time_range). `filtered` 테이블 entry_time의 최소·최대값을 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /what-indicators",
+    "FastAPI 엔드포인트 `GET /what-indicators` (핸들러 get_distinct_indicators). `filtered`의 what_indicators 문자열을 'and'로 분리해 사용된 보조지표 이름 집합을 정렬해 반환한다."
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-indicators",
+    "FastAPI 엔드포인트 `GET /filtered-indicators` (핸들러 get_indicators_in_range). 지정 entry_time 구간의 `filtered` 행에서 사용된 보조지표를 모아 ' and '로 이은 문자열로 반환한다."
+   ],
+   [
+    "file:server-frontend/pages/chart.py",
+    "저장된 전략 목록을 query API(/filtered-ohlcv, /filtered-indicators, /ohlcv/{symbol}/{interval}, /indicator-data 등)에서 받아 선택한 전략의 진입~청산 구간 캔들과 사용된 보조지표(EMA·볼린저·RSI·MACD 등)를 Plotly 차트로 시각화하는 Streamlit 페이지."
+   ],
+   [
+    "file:server-frontend/pages/profit_chart.py",
+    "query API의 /filtered-time-range, /filtered-profit-rate, /filtered-tp-sl-rate를 호출해 백테스트 누적 수익률 차트와 익절/손절 비율 등 핵심 통계를 보여 주는 Streamlit 페이지."
+   ]
+  ],
+  "oneHop": [
+   [
+    "config:server-frontend/.streamlit/secrets.toml",
+    "configures",
+    "file:server-frontend/pages/chart.py"
+   ],
+   [
+    "config:server-frontend/.streamlit/secrets.toml",
+    "configures",
+    "file:server-frontend/pages/profit_chart.py"
+   ],
+   [
+    "document:server-frontend/requirements.txt",
+    "related",
+    "file:server-frontend/pages/chart.py"
+   ],
+   [
+    "document:server-frontend/requirements.txt",
+    "related",
+    "file:server-frontend/pages/profit_chart.py"
+   ],
+   [
+    "document:server-query/requirements.txt",
+    "related",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-candle-data",
+    "related",
+    "function:server-query/main_query.py:get_candle_data"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-indicators",
+    "related",
+    "function:server-query/main_query.py:get_indicators_in_range"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-ohlcv",
+    "related",
+    "function:server-query/main_query.py:read_filtered_ohlcv"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+    "related",
+    "function:server-query/main_query.py:get_filtered_profit_rate"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-time-range",
+    "related",
+    "function:server-query/main_query.py:get_filtered_entry_time_range"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+    "related",
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate"
+   ],
+   [
+    "endpoint:server-query/main_query.py:GET /what-indicators",
+    "related",
+    "function:server-query/main_query.py:get_distinct_indicators"
+   ],
+   [
+    "endpoint:server-query/main_query.py:POST /save_strategy",
+    "related",
+    "function:server-query/main_query.py:save_strategy"
+   ],
+   [
+    "file:server-frontend/Main.py",
+    "related",
+    "file:server-frontend/pages/chart.py"
+   ],
+   [
+    "file:server-frontend/Main.py",
+    "related",
+    "file:server-frontend/pages/profit_chart.py"
+   ],
+   [
+    "file:server-frontend/pages/backtest.py",
+    "depends_on",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "file:server-frontend/pages/chart.py",
+    "depends_on",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "file:server-frontend/pages/profit_chart.py",
+    "depends_on",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "file:server-query/filtered_func.py",
+    "exports",
+    "function:server-query/filtered_func.py:calculate_statics"
+   ],
+   [
+    "file:server-query/filtered_func.py",
+    "exports",
+    "function:server-query/filtered_func.py:run_conditional_lateral_backtest"
+   ],
+   [
+    "file:server-query/filtered_func.py",
+    "exports",
+    "function:server-query/filtered_func.py:save_result_to_table"
+   ],
+   [
+    "file:server-query/filtered_func.py",
+    "imports",
+    "file:shared/connect_db.py"
+   ],
+   [
+    "file:server-query/get_data.py",
+    "exports",
+    "function:server-query/get_data.py:get_data_from_table"
+   ],
+   [
+    "file:server-query/get_data.py",
+    "exports",
+    "function:server-query/get_data.py:get_filtered_data"
+   ],
+   [
+    "file:server-query/get_data.py",
+    "exports",
+    "function:server-query/get_data.py:get_ohlcv_data"
+   ],
+   [
+    "file:server-query/get_data.py",
+    "exports",
+    "function:server-query/get_data.py:wrap_strs_with_quote"
+   ],
+   [
+    "file:server-query/get_data.py",
+    "imports",
+    "file:shared/connect_db.py"
+   ],
+   [
+    "file:server-query/init_db.py",
+    "related",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "class:server-query/main_query.py:StrategyRequest"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_candle_data"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_distinct_indicators"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_filtered_entry_time_range"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_filtered_profit_rate"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_indicator_data"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_indicators_in_range"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:get_time_range"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:read_filtered_ohlcv"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:read_ohlcv"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "exports",
+    "function:server-query/main_query.py:save_strategy"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "imports",
+    "file:server-query/filtered_func.py"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "imports",
+    "file:server-query/get_data.py"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "imports",
+    "file:shared/connect_db.py"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "imports",
+    "file:shared/symbols_intervals.py"
+   ],
+   [
+    "file:server-query/main_query.py",
+    "tested_by",
+    "file:server-query/test_query.py"
+   ],
+   [
+    "file:server-query/test_query.py",
+    "imports",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "function:server-query/get_data.py:get_filtered_data",
+    "calls",
+    "function:server-query/get_data.py:get_data_from_table"
+   ],
+   [
+    "function:server-query/main_query.py:get_candle_data",
+    "calls",
+    "function:server-query/get_data.py:get_ohlcv_data"
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_profit_rate",
+    "calls",
+    "function:server-query/get_data.py:get_data_from_table"
+   ],
+   [
+    "function:server-query/main_query.py:get_filtered_tp_sl_rate",
+    "calls",
+    "function:server-query/filtered_func.py:calculate_statics"
+   ],
+   [
+    "function:server-query/main_query.py:read_filtered_ohlcv",
+    "calls",
+    "function:server-query/get_data.py:get_filtered_data"
+   ],
+   [
+    "function:server-query/main_query.py:save_strategy",
+    "calls",
+    "function:server-query/filtered_func.py:run_conditional_lateral_backtest"
+   ],
+   [
+    "function:server-query/main_query.py:save_strategy",
+    "calls",
+    "function:server-query/filtered_func.py:save_result_to_table"
+   ],
+   [
+    "function:server-query/test_query.py:test_candle_data",
+    "calls",
+    "function:server-query/main_query.py:get_candle_data"
+   ],
+   [
+    "function:server-query/test_query.py:test_candle_data_invalid",
+    "calls",
+    "function:server-query/main_query.py:get_candle_data"
+   ],
+   [
+    "function:server-query/test_query.py:test_strategy_invalid",
+    "calls",
+    "function:server-query/main_query.py:save_strategy"
+   ],
+   [
+    "service:docker-compose.yml:query",
+    "deploys",
+    "file:server-query/main_query.py"
+   ],
+   [
+    "service:server-query/Dockerfile",
+    "deploys",
+    "file:server-query/main_query.py"
+   ]
+  ]
+ },
+ "onboard": {
+  "project": {
+   "name": "Dev5ps",
+   "languages": [
+    "dockerfile",
+    "json",
+    "markdown",
+    "python",
+    "toml",
+    "yaml"
+   ],
+   "frameworks": [
+    "FastAPI",
+    "Streamlit",
+    "SQLAlchemy",
+    "Uvicorn",
+    "pytest",
+    "pandas",
+    "Plotly",
+    "Docker",
+    "Docker Compose",
+    "GitHub Actions"
+   ],
+   "description": "오픈소스를 이용한 SW 개발 실습 프로젝트로, Binance OHLCV 데이터를 수집해 기술 지표(RSI, MACD, Bollinger 등)를 계산하고 PostgreSQL에 저장한 뒤 FastAPI 조회 서버와 Streamlit 대시보드(차트·백테스트)로 제공합니다. Docker Compose로 서비스를 구성하고 GitHub Actions로 테스트·이미지 빌드·SSH 배포를 자동화합니다.",
+   "analyzedAt": "2026-10-18T16:22:11",
+   "gitCommitHash": "028e0878ea90330caa39901ff3624f1d38c494f9"
+  },
+  "layers": [
+   [
+    "데이터 수집 계층",
+    "Binance API 클라이언트로 OHLCV 캔들을 주기적으로 가져와 PostgreSQL에 적재하는 collect_data 서버의 fetcher 모듈",
+    [
+     "server-collect_data/fetcher/main_fetch.py",
+     "server-collect_data/fetcher/__init__.py",
+     "server-collect_data/fetcher/binance_client.py",
+     "server-collect_data/fetcher/fetch_ohlcv.py"
+    ]
+   ],
+   [
+    "지표 계산 계층",
+    "수집된 캔들로 EMA·RSI·MACD·Bollinger Bands·거래량 이동평균 등 기술적 지표를 계산해 저장하는 indicators 모듈",
+    [
+     "server-collect_data/indicators/boll.py",
+     "server-collect_data/indicators/calculate.py",
+     "server-collect_data/indicators/ema.py",
+     "server-collect_data/indicators/macd.py",
+     "server-collect_data/indicators/rsi.py",
+     "server-collect_data/indicators/volume_ma.py",
+     "server-collect_data/indicators/__init__.py"
+    ]
+   ],
+   [
+    "공통 DB·설정 계층",
+    "세 서버가 공통으로 import하는 PostgreSQL 연결(connect_db)과 심볼·인터벌 상수 정의를 담은 shared 패키지",
+    [
+     "shared/symbols_intervals.py",
+     "shared/connect_db.py",
+     "shared/__init__.py"
+    ]
+   ],
+   [
+    "테스트·DB 초기화 계층",
+    "query 서버용 pytest 테스트와 테스트 DB 스키마·데이터를 준비하는 초기화 스크립트",
+    [
+     "server-query/test_query.py",
+     "server-query/init_db.py"
+    ]
+   ],
+   [
+    "백테스트·조회 API 계층",
+    "FastAPI로 OHLCV·지표 조회, 조건 필터링, 수익률·TP/SL 백테스트, 전략 저장 엔드포인트를 제공하는 query 서버",
+    [
+     "server-query/filtered_func.py",
+     "server-query/get_data.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py",
+     "server-query/main_query.py"
+    ]
+   ],
+   [
+    "프런트엔드 계층",
+    "Streamlit 멀티페이지 앱으로 차트·백테스트·수익률 화면을 그리며 query API를 호출하는 frontend 서버와 그 secrets 설정",
+    [
+     "server-frontend/pages/backtest.py",
+     "server-frontend/.streamlit/secrets.toml",
+     "server-frontend/Main.py",
+     "server-frontend/pages/chart.py",
+     "server-frontend/pages/profit_chart.py"
+    ]
+   ],
+   [
+    "인프라·배포 계층",
+    "각 서버 Dockerfile·.dockerignore, db/collect_data/query/frontend를 묶는 Docker Compose, EC2 배포용 GitHub Actions 워크플로",
+    [
+     "server-collect_data/.dockerignore",
+     "server-collect_data/Dockerfile",
+     "server-frontend/.dockerignore",
+     "server-frontend/Dockerfile",
+     "server-query/.dockerignore",
+     "server-query/Dockerfile",
+     ".github/workflows/workflow.yml",
+     "docker-compose.yml",
+     "docker-compose.yml",
+     "docker-compose.yml",
+     "docker-compose.yml",
+     "docker-compose.yml"
+    ]
+   ],
+   [
+    "문서·의존성 계층",
+    "프로젝트 README와 서버별 Python 의존성 목록(requirements.txt)",
+    [
+     "README.md",
+     "server-collect_data/requirements.txt",
+     "server-frontend/requirements.txt",
+     "server-query/requirements.txt"
+    ]
+   ]
+  ],
+  "tour": [
+   {
+    "order": 1,
+    "title": "프로젝트 개요와 서비스 구성",
+    "description": "README.md는 이 프로젝트의 흐름을 '수집 → 저장 → 백테스트 → 시각화' 네 단계로 소개하고, 백테스트 규칙과 알려진 문제(진입 중복, MDD 계산, NaN 표준편차로 인한 500 에러, SQL 문자열 보간)까지 정리합니다. docker-compose.yml은 이 흐름을 collect_data·db(postgres:15)·query(FastAPI, 8082)·frontend(Streamlit, 8501) 4개 컨테이너로 구현하며, trading_net 네트워크와 pgdata 볼륨으로 묶습니다. 이후 모든 단계는 이 4개 서비스 중 하나를 따라가는 여정입니다.",
+    "nodeIds": [
+     "document:README.md",
+     "service:docker-compose.yml",
+     "service:docker-compose.yml:db",
+     "service:docker-compose.yml:frontend"
+    ],
+    "languageLesson": "docker-compose의 depends_on은 시작 순서만 보장하고 DB가 '준비 완료'인지는 보장하지 않습니다. 컨테이너끼리는 서비스 이름이 DNS가 되므로 frontend는 API_URL=http://query:8082 처럼 서비스 이름으로 query를 호출합니다."
+   },
+   {
+    "order": 2,
+    "title": "공유 계층: DB 연결과 상수",
+    "description": "세 서버가 공통으로 import하는 shared 패키지입니다. connect_db.py는 .env의 POSTGRES_* 값으로 모듈 전역 SQLAlchemy engine을 만들고, symbols_intervals.py는 지원 심볼(BTC·ETH·XRP·SOL)과 캔들 간격(15m·1h·4h·1d)을 정의합니다. fan-in이 가장 높은 파일들로, 이후 수집·조회·프런트엔드가 모두 같은 DB와 같은 `{symbol}_{interval}` 테이블 이름 규칙을 쓰게 만드는 기반입니다.",
+    "nodeIds": [
+     "file:shared/connect_db.py",
+     "file:shared/symbols_intervals.py"
+    ],
+    "languageLesson": "Python 모듈은 처음 import될 때 한 번만 실행되므로, 모듈 최상단에 만든 engine은 사실상 프로세스 전역 싱글턴처럼 동작합니다. SQLAlchemy engine은 내부에 커넥션 풀을 갖고 있어 요청마다 새로 만들 필요가 없습니다."
+   },
+   {
+    "order": 3,
+    "title": "데이터 수집: Binance → PostgreSQL",
+    "description": "main_fetch.py의 main_loop는 60초 주기로 SYMBOLS×INTERVALS를 순회하며 save_to_db를 호출합니다. binance_client.py는 Binance klines API에서 캔들을 받아 DataFrame으로 만들고, DB의 마지막 timestamp를 조회해 증분 수집 시작점을 계산합니다. fetch_ohlcv.py는 심볼·간격별 테이블을 동적으로 생성하고 기존 데이터와 병합한 뒤 지표를 계산해 신규 행만 적재합니다.",
+    "nodeIds": [
+     "file:server-collect_data/fetcher/main_fetch.py",
+     "file:server-collect_data/fetcher/binance_client.py",
+     "file:server-collect_data/fetcher/fetch_ohlcv.py",
+     "function:server-collect_data/fetcher/fetch_ohlcv.py:save_to_db"
+    ]
+   },
+   {
+    "order": 4,
+    "title": "보조지표 계산 모듈",
+    "description": "save_to_db가 저장 직전에 호출하는 calculate_indicators는 종가·거래량으로 EMA(7/25/99)·RSI·MACD·볼린저 밴드·거래량 이동평균 컬럼을 한 번에 추가합니다. 각 지표는 ema.py, rsi.py(Wilder RMA 평활), macd.py, boll.py처럼 작은 모듈로 분리되어 있습니다. 이렇게 미리 계산해 테이블 컬럼으로 저장해 두었기 때문에, 이후 백테스트에서 사용자가 'rsi < 30' 같은 조건을 SQL WHERE절로 바로 쓸 수 있습니다.",
+    "nodeIds": [
+     "file:server-collect_data/indicators/calculate.py",
+     "file:server-collect_data/indicators/rsi.py",
+     "file:server-collect_data/indicators/macd.py",
+     "file:server-collect_data/indicators/boll.py",
+     "file:server-collect_data/indicators/ema.py"
+    ],
+    "languageLesson": "pandas의 ewm(span=n).mean()은 지수이동평균을, rolling(n).mean()/std(ddof=0)는 단순이동평균·모표준편차를 계산합니다. 벡터 연산이라 for 루프 없이 전체 시리즈에 한 번에 적용됩니다."
+   },
+   {
+    "order": 5,
+    "title": "프런트엔드: 전략 조건 입력",
+    "description": "이제 사용자 요청 하나를 끝까지 따라갑니다. Main.py는 Streamlit 멀티페이지 앱의 진입 페이지이고, pages/backtest.py에서 사용자가 코인·간격·기간과 '지표/연산자/값' 조건 행을 입력하면 이를 'and'로 이어 strategy_sql 문자열을 만듭니다. 이 문자열은 secrets.toml에 지정된 API_URL(http://query:8082)의 /save_strategy로 POST됩니다.",
+    "nodeIds": [
+     "file:server-frontend/Main.py",
+     "file:server-frontend/pages/backtest.py",
+     "config:server-frontend/.streamlit/secrets.toml"
+    ],
+    "languageLesson": "Streamlit은 위젯을 조작할 때마다 스크립트 전체를 위에서부터 다시 실행합니다. 그래서 동적으로 추가한 조건 행처럼 재실행 사이에 유지해야 하는 값은 st.session_state에 저장해야 사라지지 않습니다."
+   },
+   {
+    "order": 6,
+    "title": "FastAPI 진입점과 /save_strategy",
+    "description": "main_query.py는 11개 엔드포인트를 노출하는 조회·백테스트 서버이며, BFS 분석에서도 가장 많은 의존성을 가진 중심 노드입니다. POST /save_strategy는 요청 본문을 StrategyRequest(symbol, interval, strategy_sql, risk_reward_ratio, 선택적 start/end_time)로 검증한 뒤 백테스트를 실행하고 결과를 저장합니다. 단, 타입 검증은 하지만 strategy_sql의 내용은 검증 없이 SQL로 흘러간다는 점을 기억해 두세요.",
+    "nodeIds": [
+     "file:server-query/main_query.py",
+     "class:server-query/main_query.py:StrategyRequest",
+     "endpoint:server-query/main_query.py:POST /save_strategy",
+     "function:server-query/main_query.py:save_strategy"
+    ],
+    "languageLesson": "FastAPI에서 핸들러 인자를 Pydantic BaseModel 타입으로 선언하면 JSON 본문이 자동으로 파싱·타입 검증되고, 실패 시 422 응답이 자동 반환됩니다. Optional 필드는 기본값 None으로 선언합니다."
+   },
+   {
+    "order": 7,
+    "title": "LATERAL JOIN 백테스트 엔진",
+    "description": "run_conditional_lateral_backtest는 `{symbol}_{interval}` 테이블에서 strategy_sql 조건과 close > low*1.005를 만족하는 캔들을 진입으로 잡고, SL=진입 캔들 low, TP=close+(close−low)·rr로 설정합니다. LEFT JOIN LATERAL로 이후 처음 low<=SL 또는 high>=TP가 되는 캔들을 청산으로 찾고(SL 우선, 없으면 OPEN), save_result_to_table은 매번 `filtered` 테이블을 비우고 최신 결과만 저장합니다. 알려진 문제로 strategy_sql·기간 값의 문자열 보간(SQL injection), 진입 중복, ORDER BY 없는 cumprod가 있습니다.",
+    "nodeIds": [
+     "file:server-query/filtered_func.py",
+     "function:server-query/filtered_func.py:run_conditional_lateral_backtest",
+     "function:server-query/filtered_func.py:save_result_to_table"
+    ],
+    "languageLesson": "PostgreSQL의 LEFT JOIN LATERAL은 오른쪽 서브쿼리가 왼쪽 행의 컬럼(진입 시각, SL, TP)을 참조할 수 있게 해 '행마다 실행되는 서브쿼리'를 만듭니다. 또한 SQLAlchemy text(\"... WHERE ts >= :start\")에 params로 값을 넘기면 드라이버가 안전하게 바인딩하지만, f-string으로 끼워 넣으면 입력이 그대로 SQL이 되어 injection에 노출됩니다(단, 조건식 자체는 바인딩할 수 없으므로 화이트리스트 검증이 필요)."
+   },
+   {
+    "order": 8,
+    "title": "통계 계산과 결과 조회 API",
+    "description": "calculate_statics는 `filtered` 테이블을 읽어 TP/SL 건수·승률·기대값·MDD·최종 누적수익률을 계산하고, GET /filtered-tp-sl-rate가 이를 그대로 반환합니다. GET /filtered-profit-rate는 수익률 그래프용 데이터를, get_data.py의 헬퍼들은 테이블 조회와 inf/NaN 정리를 담당합니다. 알려진 문제로 MDD를 비율이 아닌 %p 하락으로 계산하고, TP/SL 행이 1개면 std가 NaN이 되어 JSON 직렬화 실패(500)가 발생합니다.",
+    "nodeIds": [
+     "function:server-query/filtered_func.py:calculate_statics",
+     "endpoint:server-query/main_query.py:GET /filtered-tp-sl-rate",
+     "endpoint:server-query/main_query.py:GET /filtered-profit-rate",
+     "file:server-query/get_data.py"
+    ],
+    "languageLesson": "누적수익률은 pandas에서 (1 + r).cumprod() - 1로 구하며, 행 순서에 의존하므로 반드시 시간순 정렬 후 계산해야 합니다. 또한 NaN은 truthy라서 `nan or 0.0`은 여전히 NaN이므로 pd.isna()나 math.isnan()으로 명시적으로 처리해야 합니다."
+   },
+   {
+    "order": 9,
+    "title": "결과 시각화 페이지",
+    "description": "요청의 마지막 단계로 프런트엔드가 결과를 보여 줍니다. profit_chart.py는 /filtered-time-range·/filtered-profit-rate·/filtered-tp-sl-rate를 호출해 누적 수익률 차트와 익절/손절 통계를 그리고, chart.py는 /filtered-ohlcv·/indicator-data 등으로 선택한 전략의 진입~청산 구간 캔들과 사용된 지표를 Plotly로 시각화합니다. Step 4에서 저장한 지표 컬럼이 여기서 다시 차트로 돌아옵니다.",
+    "nodeIds": [
+     "file:server-frontend/pages/profit_chart.py",
+     "file:server-frontend/pages/chart.py",
+     "endpoint:server-query/main_query.py:GET /indicator-data"
+    ]
+   },
+   {
+    "order": 10,
+    "title": "테스트와 CI/CD 배포",
+    "description": "init_db.py는 SYMBOLS×INTERVALS 조합의 OHLCV 테이블을 만들고 샘플 캔들을 채우며, test_query.py는 이를 autouse fixture로 실행한 뒤 TestClient로 조회 엔드포인트와 잘못된 strategy_sql의 500 응답을 검증합니다. workflow.yml은 main push 시 Postgres 15 서비스 컨테이너로 이 테스트를 돌리고, 통과하면 세 이미지를 멀티아키텍처로 Docker Hub에 푸시한 다음 SSH로 EC2에서 docker-compose를 갱신·실행합니다. 각 서비스의 Dockerfile은 python:3.11-slim 기반으로 shared 모듈을 함께 복사합니다.",
+    "nodeIds": [
+     "file:server-query/init_db.py",
+     "file:server-query/test_query.py",
+     "pipeline:.github/workflows/workflow.yml",
+     "service:server-query/Dockerfile"
+    ],
+    "languageLesson": "GitHub Actions의 jobs는 기본적으로 병렬 실행되므로 needs: [test]처럼 의존성을 선언해 test → push → deploy 순서를 강제합니다. services: 블록으로 띄운 Postgres 컨테이너는 job 동안만 살아 있는 일회용 테스트 DB입니다."
+   }
+  ],
+  "hotspots": [
+   [
+    8,
+    "server-query/main_query.py",
+    null
+   ],
+   [
+    8,
+    "server-query/filtered_func.py",
+    null
+   ],
+   [
+    8,
+    "server-frontend/pages/chart.py",
+    null
+   ],
+   [
+    5,
+    "server-query/test_query.py",
+    null
+   ],
+   [
+    5,
+    "server-query/init_db.py",
+    null
+   ],
+   [
+    5,
+    "server-query/get_data.py",
+    null
+   ],
+   [
+    5,
+    "server-frontend/pages/profit_chart.py",
+    null
+   ],
+   [
+    5,
+    "server-frontend/pages/backtest.py",
+    null
+   ]
+  ]
+ },
+ "knowledge": {
+  "docs": [
+   "README.md",
+   "server-collect_data/requirements.txt",
+   "server-frontend/requirements.txt",
+   "server-query/requirements.txt"
+  ],
+  "sharedConcepts": {},
+  "isolatedDocs": [
+   "README.md",
+   "server-collect_data/requirements.txt",
+   "server-frontend/requirements.txt",
+   "server-query/requirements.txt"
+  ]
+ }
+}

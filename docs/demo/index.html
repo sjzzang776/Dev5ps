@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dev5ps 백테스트 체험</title>
+<meta name="description" content="Dev5ps 팀 서비스의 조건식 백테스트 규칙을 브라우저에서 그대로 돌려 보는 데모">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14202B;--sub:#5A6876;--faint:#8C98A4;--hair:#D9DFE6;--paper:#FFFFFF;--panel:#F6F8FA;--dot:#E6EBF0;
+ --cobalt:#2B50E0;--cobalt-soft:#E8EDFD;--amber:#E0700B;--green:#0F8A5F;--red:#D23F37}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#E6EBF0;--sub:#A7B2BD;--faint:#76828E;--hair:#2C3742;
+ --paper:#11171D;--panel:#18202A;--dot:#1C252F;--cobalt:#7C97FF;--cobalt-soft:#1F2A4A;--amber:#F29A45;--green:#3FC28F;--red:#F07068}}
+:root[data-theme="dark"]{--ink:#E6EBF0;--sub:#A7B2BD;--faint:#76828E;--hair:#2C3742;--paper:#11171D;--panel:#18202A;--dot:#1C252F;
+ --cobalt:#7C97FF;--cobalt-soft:#1F2A4A;--amber:#F29A45;--green:#3FC28F;--red:#F07068}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);background:var(--paper);line-height:1.55}
+header{padding:36px 40px 26px;border-bottom:1px solid var(--hair);
+ background-image:radial-gradient(var(--dot) 1.1px,transparent 1.3px);background-size:18px 18px}
+h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:0}
+.lede{color:var(--sub);font-size:14.5px;max-width:860px;margin-top:8px}
+.lede a{color:var(--cobalt)}
+main{display:grid;grid-template-columns:340px 1fr;gap:0;min-height:calc(100vh - 140px)}
+aside{padding:26px 28px;border-right:1px solid var(--hair);background:var(--panel)}
+section.out{padding:26px 36px;min-width:0}
+h2{font-size:14px;font-weight:700;color:var(--sub);margin:0 0 10px}
+.block{margin-bottom:26px}
+.cond{display:grid;grid-template-columns:1fr 54px 1fr 26px;gap:6px;margin-bottom:8px;align-items:center}
+select,input[type=number]{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--hair);
+ border-radius:6px;padding:6px 8px;width:100%;min-width:0}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--cobalt);outline-offset:1px}
+.x{border:0;background:none;color:var(--faint);font-size:18px;cursor:pointer;padding:0}
+.x:hover{color:var(--red)}
+.link{border:0;background:none;color:var(--cobalt);font:inherit;font-size:14px;cursor:pointer;padding:2px 0}
+.and{font-size:12px;color:var(--faint);margin:-2px 0 6px 4px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{font:inherit;font-size:13px;border:1px solid var(--hair);background:var(--paper);color:var(--ink);border-radius:999px;padding:4px 11px;cursor:pointer}
+.presets button:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.rr{display:flex;align-items:center;gap:12px}
+.rr input{flex:1;accent-color:var(--cobalt)}
+.rr b{font-size:18px;min-width:44px;text-align:right}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hair);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:13.5px;border:0;background:var(--paper);color:var(--sub);padding:9px 6px;cursor:pointer;line-height:1.3}
+.seg button[aria-pressed="true"]{background:var(--cobalt);color:#fff;font-weight:700}
+.hint{font-size:12.5px;color:var(--faint);margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-bottom:1px solid var(--hair)}
+.stat{padding:14px 16px 12px 0}
+.stat .v{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.stat .l{font-size:12.5px;color:var(--sub);margin-top:4px}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.chart{margin:22px 0 6px;width:100%}
+.chart svg{width:100%;height:auto;display:block}
+.cap{font-size:12.5px;color:var(--faint)}
+.note{font-size:13.5px;color:var(--sub);border-left:3px solid var(--amber);padding:6px 0 6px 12px;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:8px}
+th{text-align:right;font-size:12.5px;color:var(--sub);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--hair)}
+td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+.tag{font-size:12px;font-weight:700;padding:1px 7px;border-radius:4px}
+.tag.TP{color:var(--green);background:color-mix(in srgb,var(--green) 12%,transparent)}
+.tag.SL{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}
+.tag.OPEN{color:var(--sub);background:var(--panel)}
+.empty{padding:40px 0;color:var(--sub)}
+footer{padding:18px 40px 30px;font-size:12.5px;color:var(--faint);border-top:1px solid var(--hair)}
+footer a{color:var(--sub)}
+@media (max-width:860px){header{padding:26px 16px 20px}h1{font-size:23px}main{grid-template-columns:1fr}
+ aside{border-right:0;border-bottom:1px solid var(--hair);padding:20px 16px}section.out{padding:20px 16px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat .v{font-size:24px}footer{padding:16px}
+ .tbl{overflow-x:auto}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Dev5ps 백테스트 체험</h1>
+  <p class="lede">지표 조건과 손익비를 고르면, 팀 서비스와 같은 규칙으로 "그때 이렇게 샀다면?"을 바로 계산합니다.
+  데이터는 Binance BTCUSDT 1시간 봉 5,000개(<span id="span"></span>)이고 지표는 팀 코드로 미리 계산했습니다.
+  실제 서비스(FastAPI + PostgreSQL + Streamlit)를 띄우는 방법은 <a href="https://github.com/sjzzang776/Dev5ps#readme">README</a>에 있습니다.</p>
+</header>
+<main>
+  <aside>
+    <div class="block">
+      <h2>진입 조건 (모두 만족)</h2>
+      <div id="conds"></div>
+      <button class="link" id="add">+ 조건 추가</button>
+    </div>
+    <div class="block">
+      <h2>예시 전략</h2>
+      <div class="presets" id="presets"></div>
+    </div>
+    <div class="block">
+      <h2>손익비 (익절 폭 ÷ 손절 폭)</h2>
+      <div class="rr"><input type="range" id="rr" min="1" max="5" step="0.5" value="2" aria-label="손익비"><b id="rrv">2.0</b></div>
+    </div>
+    <div class="block">
+      <h2>진입 방식</h2>
+      <div class="seg" role="group" aria-label="진입 방식">
+        <button id="mAll" aria-pressed="true">신호마다 진입<br><small>팀 코드 규칙</small></button>
+        <button id="mOne" aria-pressed="false">한 번에 한 포지션<br><small>보유 중 신호 무시</small></button>
+      </div>
+      <p class="hint">팀 코드는 이미 보유 중이어도 새 신호마다 또 진입합니다. 두 방식을 바꿔 가며 결과가 얼마나 달라지는지 보세요.</p>
+    </div>
+    <p class="hint">규칙: 조건을 만족한 봉의 종가에 진입, 손절선 = 그 봉의 저가, 익절선 = 종가 + (종가 − 저가) × 손익비.
+    다음 봉부터 둘 중 먼저 닿는 쪽에서 청산(같은 봉에서 둘 다 닿으면 손절). 손절 폭이 0.5% 이하인 봉은 진입하지 않음. 수수료 미반영.</p>
+  </aside>
+  <section class="out" aria-live="polite">
+    <div class="stats">
+      <div class="stat"><div class="v" id="sN">–</div><div class="l">청산된 거래</div></div>
+      <div class="stat"><div class="v" id="sW">–</div><div class="l">승률 (익절 비율)</div></div>
+      <div class="stat"><div class="v" id="sF">–</div><div class="l">최종 누적수익률</div></div>
+      <div class="stat"><div class="v" id="sM">–</div><div class="l">MDD (원금 포함 비율)</div></div>
+    </div>
+    <div class="chart" id="chart"></div>
+    <div class="cap" id="cap"></div>
+    <div class="note" id="overlap" hidden></div>
+    <h2 style="margin-top:24px">최근 거래 <span class="cap" id="tcount"></span></h2>
+    <div class="tbl"><table><thead><tr><th>진입 시각 (KST)</th><th>진입가</th><th>손절선</th><th>익절선</th><th>결과</th><th>수익률</th><th>누적</th></tr></thead>
+    <tbody id="trades"></tbody></table></div>
+  </section>
+</main>
+<footer>규칙과 지표 계산은 팀 저장소의 <code>server-query/filtered_func.py</code>(LATERAL JOIN 백테스트)와 <code>server-collect_data/indicators</code>를 따릅니다.
+데이터 생성: <code>docs/demo/build_data.py</code> · 학습·투자 조언이 아닌 프로젝트 데모입니다 ·
+<a href="https://github.com/sjzzang776/Dev5ps">github.com/sjzzang776/Dev5ps</a></footer>
+
+<script>
+const FIELDS = ["close","open","high","low","rsi","rsi_signal","ema_7","ema_25","ema_99","macd","macd_signal",
+                "boll_ma","boll_upper","boll_lower","volume","volume_ma_20"];
+const OPS = [">","<",">=","<="];
+const PRESETS = [
+  {name:"RSI 과매수 + 단기 추세", conds:[["rsi",">","70"],["ema_7",">","ema_25"]]},
+  {name:"RSI 과매도", conds:[["rsi","<","30"]]},
+  {name:"MACD 골든크로스 상태", conds:[["macd",">","macd_signal"],["macd","<","0"]]},
+  {name:"볼린저 하단 이탈", conds:[["close","<","boll_lower"]]},
+  {name:"거래량 급증 + 상승 추세", conds:[["volume",">","volume_ma_20"],["ema_25",">","ema_99"]]},
+];
+let D = null, conds = PRESETS[0].conds.map(c => [...c]), rr = 2, onePos = false;
+const $ = id => document.getElementById(id);
+const fmtP = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
+const fmtN = v => v.toLocaleString("en-US", {maximumFractionDigits: 2});
+const kst = ms => { const d = new Date(ms + 9*3600e3); const p = n => String(n).padStart(2,"0");
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}시`; };
+
+function renderConds(){
+  const box = $("conds"); box.innerHTML = "";
+  conds.forEach((c, k) => {
+    if (k) { const a = document.createElement("div"); a.className = "and"; a.textContent = "그리고"; box.appendChild(a); }
+    const row = document.createElement("div"); row.className = "cond";
+    const L = document.createElement("select"); FIELDS.forEach(f => L.add(new Option(f, f))); L.value = c[0];
+    const O = document.createElement("select"); OPS.forEach(o => O.add(new Option(o, o))); O.value = c[1];
+    const R = document.createElement("select"); R.add(new Option("숫자 입력", "#")); FIELDS.forEach(f => R.add(new Option(f, f)));
+    const isNum = !FIELDS.includes(c[2]); R.value = isNum ? "#" : c[2];
+    const wrap = document.createElement("div"); wrap.style.display = "grid"; wrap.style.gap = "4px"; wrap.appendChild(R);
+    if (isNum) { const N = document.createElement("input"); N.type = "number"; N.value = c[2]; N.step = "any"; N.ariaLabel = "기준값";
+      N.oninput = () => { c[2] = N.value; run(); }; wrap.appendChild(N); }
+    const X = document.createElement("button"); X.className = "x"; X.textContent = "×"; X.title = "조건 삭제"; X.ariaLabel = "조건 삭제";
+    X.disabled = conds.length === 1;
+    L.onchange = () => { c[0] = L.value; run(); }; O.onchange = () => { c[1] = O.value; run(); };
+    R.onchange = () => { c[2] = R.value === "#" ? "0" : R.value; renderConds(); run(); };
+    X.onclick = () => { conds.splice(k, 1); renderConds(); run(); };
+    row.append(L, O, wrap, X); box.appendChild(row);
+  });
+}
+
+function test(i){
+  for (const [l, op, r] of conds){
+    const a = D[l][i]; const b = FIELDS.includes(r) ? D[r][i] : parseFloat(r);
+    if (a === null || b === null || Number.isNaN(b)) return false;
+    if (op === ">" && !(a > b)) return false;
+    if (op === "<" && !(a < b)) return false;
+    if (op === ">=" && !(a >= b)) return false;
+    if (op === "<=" && !(a <= b)) return false;
+  }
+  return true;
+}
+
+function backtest(one){
+  const n = D.t.length, tr = []; let busy = -1, cum = 1;
+  for (let i = 0; i < n; i++){
+    if (!test(i) || !(D.close[i] > D.low[i] * 1.005)) continue;
+    if (one && i <= busy) continue;
+    const e = D.close[i], sl = D.low[i], tp = e + (e - D.low[i]) * rr;
+    let j = -1;
+    for (let k = i + 1; k < n; k++){ if (D.low[k] <= sl || D.high[k] >= tp){ j = k; break; } }
+    const res = j < 0 ? "OPEN" : (D.low[j] <= sl ? "SL" : "TP");
+    const pr = res === "OPEN" ? 0 : ((res === "TP" ? tp : sl) - e) / e;
+    cum *= 1 + pr;
+    tr.push({i, j, t: D.t[i], e, sl, tp, res, pr, cum: cum - 1});
+    busy = j < 0 ? n : j;
+  }
+  return tr;
+}
+
+function stats(tr){
+  const closed = tr.filter(x => x.res !== "OPEN"), tp = closed.filter(x => x.res === "TP").length;
+  let peak = 1, mdd = 0;
+  for (const x of tr){ const eq = 1 + x.cum; peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1); }
+  return {n: closed.length, win: closed.length ? tp / closed.length * 100 : 0,
+          fin: tr.length ? tr[tr.length - 1].cum * 100 : 0, mdd: mdd * 100};
+}
+
+function chart(a, b){
+  const W = 900, H = 300, l = 52, r = 70, t = 12, bt = 28, t0 = D.t[0], t1 = D.t[D.t.length - 1];
+  const vals = [0, ...a.map(x => x.cum * 100), ...b.map(x => x.cum * 100)];
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+  const X = ms => l + (ms - t0) / (t1 - t0) * (W - l - r), Y = v => t + (hi - v) / (hi - lo) * (H - t - bt);
+  const css = getComputedStyle(document.documentElement), c = n => css.getPropertyValue(n).trim();
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="누적수익률 그래프">`;
+  const raw = (hi - lo) / 5, mag = 10 ** Math.floor(Math.log10(raw)), step = [1,2,5,10].map(m => m * mag).find(v => v >= raw);
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step){
+    const z = Math.abs(v) < 1e-9;
+    s += `<line x1="${l}" x2="${W - r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${z ? c("--faint") : c("--hair")}" stroke-width="${z ? 1.4 : 1}"/>`;
+    s += `<text x="${l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="${c("--faint")}">${z ? "0%" : fmtP(v).replace(".0%", "%")}</text>`;
+  }
+  const d0 = new Date(t0);
+  for (let m = new Date(Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth() + 1, 1)); m.getTime() < t1; m.setUTCMonth(m.getUTCMonth() + 1))
+    s += `<text x="${X(m.getTime())}" y="${H - 8}" text-anchor="middle" font-size="11" fill="${c("--faint")}">${m.getUTCMonth() + 1}월</text>`;
+  const line = (tr, col, w, lab) => {
+    let p = `${X(t0)},${Y(0)}`, prev = 0;
+    for (const x of tr){ p += ` ${X(x.t)},${Y(prev)} ${X(x.t)},${Y(x.cum * 100)}`; prev = x.cum * 100; }
+    p += ` ${X(t1)},${Y(prev)}`;
+    return `<polyline points="${p}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round"/>` +
+      (lab ? `<text x="${W - r + 8}" y="${Y(prev) + 5}" font-size="14" font-weight="800" fill="${col}">${fmtP(prev)}</text>` : "");
+  };
+  s += line(onePos ? a : b, c("--hair"), 2, false);
+  s += line(onePos ? b : a, onePos ? c("--cobalt") : c("--amber"), 2.6, true);
+  return s + "</svg>";
+}
+
+function run(){
+  if (!D) return;
+  const all = backtest(false), one = backtest(true), cur = onePos ? one : all, st = stats(cur), so = stats(onePos ? all : one);
+  $("sN").textContent = st.n.toLocaleString() + "회";
+  $("sW").textContent = st.n ? st.win.toFixed(1) + "%" : "–";
+  const F = $("sF"); F.textContent = fmtP(st.fin); F.className = "v " + (st.fin >= 0 ? "pos" : "neg");
+  $("sM").textContent = fmtP(st.mdd).replace("+0.0%", "0.0%");
+  if (!cur.length){
+    $("chart").innerHTML = `<div class="empty">이 조건을 만족하는 봉이 없습니다. 조건을 완화해 보세요.</div>`;
+    $("cap").textContent = ""; $("overlap").hidden = true; $("trades").innerHTML = ""; $("tcount").textContent = ""; return;
+  }
+  $("chart").innerHTML = chart(all, one);
+  $("cap").textContent = `굵은 선: ${onePos ? "한 번에 한 포지션" : "신호마다 진입(팀 규칙)"}, 옅은 선: ${onePos ? "신호마다 진입" : "한 번에 한 포지션"} · 누적수익률, 계단은 진입 시점 기준`;
+  const ov = $("overlap");
+  if (all.length !== one.length){
+    ov.hidden = false;
+    ov.textContent = `같은 조건이라도 진입이 겹치면 ${stats(all).n}회 ${fmtP(stats(all).fin)}, 한 번에 한 포지션만 잡으면 ${stats(one).n}회 ${fmtP(stats(one).fin)}입니다. ` +
+      `신호마다 진입하는 결과에는 한 계좌로는 동시에 가질 수 없는 포지션이 섞여 있습니다.`;
+  } else ov.hidden = true;
+  const last = cur.slice(-30).reverse();
+  $("tcount").textContent = `(전체 ${cur.length}건 중 최근 ${last.length}건)`;
+  $("trades").innerHTML = last.map(x => `<tr><td>${kst(x.t)}</td><td>${fmtN(x.e)}</td><td>${fmtN(x.sl)}</td><td>${fmtN(x.tp)}</td>` +
+    `<td><span class="tag ${x.res}">${x.res === "TP" ? "익절" : x.res === "SL" ? "손절" : "보유 중"}</span></td>` +
+    `<td class="${x.pr > 0 ? "pos" : x.pr < 0 ? "neg" : ""}">${x.res === "OPEN" ? "–" : fmtP(x.pr * 100)}</td><td>${fmtP(x.cum * 100)}</td></tr>`).join("");
+}
+
+$("add").onclick = () => { conds.push(["rsi", "<", "50"]); renderConds(); run(); };
+$("rr").oninput = e => { rr = parseFloat(e.target.value); $("rrv").textContent = rr.toFixed(1); run(); };
+$("mAll").onclick = () => { onePos = false; $("mAll").ariaPressed = "true"; $("mOne").ariaPressed = "false"; run(); };
+$("mOne").onclick = () => { onePos = true; $("mAll").ariaPressed = "false"; $("mOne").ariaPressed = "true"; run(); };
+PRESETS.forEach(p => { const b = document.createElement("button"); b.textContent = p.name;
+  b.onclick = () => { conds = p.conds.map(c => [...c]); renderConds(); run(); }; $("presets").appendChild(b); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", run);
+renderConds();
+fetch("btcusdt_1h.json").then(r => r.json()).then(j => {
+  D = j; const d = ms => new Date(ms).toISOString().slice(0, 10);
+  $("span").textContent = `${d(D.t[0])} ~ ${d(D.t[D.t.length - 1])}`; run();
+}).catch(() => { $("chart").innerHTML = `<div class="empty">데이터를 불러오지 못했습니다. 로컬에서는 <code>python -m http.server -d docs/demo</code>로 여세요.</div>`; });
+</script>
+</body>
+</html>

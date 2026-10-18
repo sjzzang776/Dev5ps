@@ -1,0 +1,25 @@
+diff --git a/server-query/filtered_func.py b/server-query/filtered_func.py
+index 3ae4247..5c2c2cf 100644
+--- a/server-query/filtered_func.py
++++ b/server-query/filtered_func.py
+@@ -184,14 +184,13 @@ def calculate_statics() -> dict:
+         else 0
+     )
+ 
+-    cum_max = df["cum_profit_rate"].cummax()
+-    drawdown = df["cum_profit_rate"] - cum_max
++    df = df.sort_values("entry_time").reset_index(drop=True)
++    equity = 1 + df["cum_profit_rate"] / 100            # 자산 배수
++    peak = equity.cummax().clip(lower=1.0)              # 원금(1.0)도 고점 후보
++    drawdown = equity / peak - 1                        # 비율 낙폭
+     low_idx = drawdown.idxmin()
+-    high_idx = df.loc[:low_idx, "cum_profit_rate"].idxmax()
+-
+-    low_price = df.loc[low_idx, "cum_profit_rate"] * 0.01 + 1
+-    high_price = df.loc[high_idx, "cum_profit_rate"] * 0.01 + 1
+-    mdd = (low_price - high_price) * 100 / high_price if high_price != 0 else -100.0
++    high_idx = equity.loc[:low_idx].idxmax()
++    mdd = float(drawdown.loc[low_idx] * 100)
+ 
+     return {
+         "total_count": int(total_count),

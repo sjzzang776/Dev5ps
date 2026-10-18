@@ -3,4 +3,4 @@ pandas
 requests
 plotly
 python-dotenv
-sqlalchemy
+sqlalchemy<2.1

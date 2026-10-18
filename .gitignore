@@ -172,3 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Understand-Anything 임시 파일
+.ua/.trash-*/
+.ua/tmp/
